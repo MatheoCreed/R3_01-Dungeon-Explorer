@@ -15,7 +15,7 @@ class ChapterController
             1,
             "La Forêt Enchantée",
             "Vous vous trouvez dans une forêt sombre et enchantée. Deux chemins se présentent à vous.",
-            "../sprites/background/foret1.png", // Chemin vers l'image
+            "./sprites/background/foret3.png", // Chemin vers l'image
             [
                 ["text" => "Aller à gauche", "chapter" => 2],
                 ["text" => "Aller à droite", "chapter" => 3]
