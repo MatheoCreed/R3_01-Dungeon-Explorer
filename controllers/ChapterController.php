@@ -35,10 +35,6 @@ class ChapterController
 
     }
 
-    public function index() {
-        require_once 'views/chapter_view.php';
-    }
-
     public function show($id)
     {
         $chapter = $this->getChapter($id);

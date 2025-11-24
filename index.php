@@ -1,9 +1,4 @@
 <?php
-// index.php - redirect directly to chapter_view.php
-header('Location: views/accueil_view.php', true, 302);
-exit;
-
-// index.php
 
 require 'autoload.php';
 
@@ -24,41 +19,32 @@ class Router
 
     public function route($url)
     {
-        // Suppression du préfixe du début de l'URL
-        if ($this->prefix && strpos($url, $this->prefix) === 0) {
-            $url = substr($url, strlen($this->prefix) + 1);
-        }
-
-        // Suppression des barres obliques en trop
+        // Nettoyage
         $url = trim($url, '/');
 
-        // Vérification de la correspondance de l'URL à une route définie
-        if (array_key_exists($url, $this->routes)) {
-            // Extraction du nom du contrôleur et de la méthode
+        // Si route trouvée
+        if (isset($this->routes[$url])) {
+
             list($controllerName, $methodName) = explode('@', $this->routes[$url]);
 
-            // Instanciation du contrôleur et appel de la méthode
+            require_once "controllers/$controllerName.php";
+
             $controller = new $controllerName();
             $controller->$methodName();
-        } else {
-            // Route non trouvée, afficher une page 404
-            include 'views/404.php';
+            return;
         }
+
+        // Sinon 404
+        require 'views/404.php';
     }
 }
 
-// -----------------------------
 // ROUTES
-// -----------------------------
-$router = new Router('/dungeonExplorer/R3_01-Dungeon-Explorer');
+$router = new Router('R3_01-Dungeon-Explorer');
 
-// Route accueil
-$router->addRoute('chapter_view', 'ChapterController@index');
 
-// -----------------------------
+$router->addRoute('', 'AccueilController@index');
+$router->addRoute('temp_view', 'tempController@index');
+
 // DISPATCH
-// -----------------------------
-$url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$router->route($url);
-
-?>
+$router->route($_GET['url'] ?? '');

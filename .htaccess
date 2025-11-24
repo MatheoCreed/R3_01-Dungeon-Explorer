@@ -1,9 +1,9 @@
 RewriteEngine On
-RewriteBase /dungeonExplorer/R3_01-Dungeon-Explorer/
+RewriteBase /R3_01-Dungeon-Explorer/
 
-# Ne pas réécrire les requêtes pour les fichiers existants
+# ignorer les vrais fichiers
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Réécrire toutes les autres requêtes vers index.php
-RewriteRule ^(.*)$ index.php [QSA,L]
+# envoyer vers index.php
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]

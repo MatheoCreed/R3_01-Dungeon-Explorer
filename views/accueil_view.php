@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>DungeonExplorer – Connexion</title>
-    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="/R3_01-Dungeon-Explorer/style/style.css">
 </head>
 <body>
 
 <div class="container">
 
-    <img src="../sprites/icon/Logo.png" class="logo" alt="Logo du jeu">
+    <img src="/R3_01-Dungeon-Explorer/sprites/icon/Logo.png" class="logo" alt="Logo du jeu">
 
     <div class="buttons">
-        <a href="../controllers/ChapterController.php" class="btn">Se connecter</a>
+        <a href="temp_view" class="btn">Se connecter</a>
         <a href="" class="btn">S'inscrire</a>
     </div>
 
