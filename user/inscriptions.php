@@ -90,9 +90,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <?php if (!empty($errors)): ?>
             <div class="mb-4">
-                <div class="border-4 border-[#2b2116] bg-[#fff8e0] p-3">
+                <div class="border-4 border-[#2b2116] bg-[#fff8e0] p-3 rounded-lg shadow-lg">
                     <?php foreach ($errors as $e): ?>
-                        <div class="text-red-700 text-[10px]"><?= htmlspecialchars($e) ?></div>
+                        <div class="text-red-700 text-sm font-medium"><?= htmlspecialchars($e) ?></div>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -100,67 +100,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <?php if ($success): ?>
             <div class="mb-4">
-                <div class="border-4 border-[#2b2116] bg-[#e6f7e9] p-3">
-                    <div class="text-green-700 text-[10px]"><?= htmlspecialchars($success) ?></div>
+                <div class="border-4 border-[#2b2116] bg-[#e6f7e9] p-3 rounded-lg shadow-lg">
+                    <div class="text-green-700 text-sm font-medium"><?= htmlspecialchars($success) ?></div>
                 </div>
             </div>
         <?php endif; ?>
 
-        <form method="post" action="" class="max-w-md mx-auto
-                    bg-gradient-to-b from-[#f4e7c8] via-[#e6cf97] to-[#ddbf74]
-                    border-8 border-[#2b2116] p-5
-                    shadow-[6px_6px_0_0_#1b150f,-6px_-6px_0_0_#3a2f24]">
+        <form method="post" action="" class="max-w-md mx-auto bg-gradient-to-b from-[#f4e7c8] via-[#e6cf97] to-[#ddbf74] border-8 border-[#2b2116] p-5 rounded-lg shadow-lg">
             <input type="hidden" name="csrf" value="<?= htmlspecialchars($token) ?>">
 
             <div class="flex items-center justify-between">
-                <div class="text-[#2b2116] text-[10px]">Nom d'utilisateur</div>
-                <div class="text-[#6b5341] text-[9px]">min 3 caractères</div>
+                <div class="text-[#2b2116] text-sm font-medium">Nom d'utilisateur</div>
+                <div class="text-[#6b5341] text-xs">min 3 caractères</div>
             </div>
             <label class="block mt-2">
                 <input type="text" name="username" required
                        value="<?= htmlspecialchars($_POST['username'] ?? '') ?>"
-                       class="w-full mt-2 bg-[#fff8e6] border-4 border-[#2b2116] shadow-inner shadow-[inset_0_-6px_0_rgba(0,0,0,0.08)] p-2 tracking-wider text-[12px] focus:outline-none">
+                       class="w-full mt-2 bg-[#fff8e6] border-4 border-[#2b2116] shadow-inner shadow-[inset_0_-6px_0_rgba(0,0,0,0.08)] p-2 tracking-wider text-sm focus:outline-none rounded-lg">
             </label>
 
             <div class="flex items-center justify-between mt-3">
-                <div class="text-[#2b2116] text-[10px]">Email</div>
-                <div class="text-[#6b5341] text-[9px]">email@exemple.com</div>
+                <div class="text-[#2b2116] text-sm font-medium">Email</div>
+                <div class="text-[#6b5341] text-xs">email@exemple.com</div>
             </div>
             <label class="block mt-2">
                 <input type="email" name="email" required
                        value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
-                       class="w-full mt-2 bg-[#fff8e6] border-4 border-[#2b2116] shadow-inner shadow-[inset_0_-6px_0_rgba(0,0,0,0.08)] p-2 tracking-wider text-[12px] focus:outline-none">
+                       class="w-full mt-2 bg-[#fff8e6] border-4 border-[#2b2116] shadow-inner shadow-[inset_0_-6px_0_rgba(0,0,0,0.08)] p-2 tracking-wider text-sm focus:outline-none rounded-lg">
             </label>
 
             <div class="flex items-center justify-between mt-3">
-                <div class="text-[#2b2116] text-[10px]">Mot de passe</div>
-                <div class="text-[#6b5341] text-[9px]">min 6 caractères</div>
+                <div class="text-[#2b2116] text-sm font-medium">Mot de passe</div>
+                <div class="text-[#6b5341] text-xs">min 6 caractères</div>
             </div>
             <label class="block mt-2">
                 <input type="password" name="password" required
-                       class="w-full mt-2 bg-[#fff8e6] border-4 border-[#2b2116] shadow-inner shadow-[inset_0_-6px_0_rgba(0,0,0,0.08)] p-2 tracking-wider text-[12px] focus:outline-none">
+                       class="w-full mt-2 bg-[#fff8e6] border-4 border-[#2b2116] shadow-inner shadow-[inset_0_-6px_0_rgba(0,0,0,0.08)] p-2 tracking-wider text-sm focus:outline-none rounded-lg">
             </label>
 
             <div class="flex items-center justify-between mt-3">
-                <div class="text-[#2b2116] text-[10px]">Confirmer mot de passe</div>
-                <div class="text-[#6b5341] text-[9px]">&nbsp;</div>
+                <div class="text-[#2b2116] text-sm font-medium">Confirmer mot de passe</div>
+                <div class="text-[#6b5341] text-xs">&nbsp;</div>
             </div>
             <label class="block mt-2">
                 <input type="password" name="password_confirm" required
-                       class="w-full mt-2 bg-[#fff8e6] border-4 border-[#2b2116] shadow-inner shadow-[inset_0_-6px_0_rgba(0,0,0,0.08)] p-2 tracking-wider text-[12px] focus:outline-none">
+                       class="w-full mt-2 bg-[#fff8e6] border-4 border-[#2b2116] shadow-inner shadow-[inset_0_-6px_0_rgba(0,0,0,0.08)] p-2 tracking-wider text-sm focus:outline-none rounded-lg">
             </label>
 
             <div class="h-2 my-4 bg-[repeating-linear-gradient(90deg,#2b2116_0_4px,#5b452f_4px_8px)]"></div>
 
             <div class="flex items-center justify-between">
                 <button type="submit"
-                        class="text-white text-[12px] px-4 py-2
+                        class="text-white text-sm px-4 py-2
                                bg-gradient-to-b from-[#8b3b0f] to-[#5b1f05]
                                border-[5px] border-[#2b2116]
-                               shadow-[0_6px_0_#1b150f] hover:brightness-95">
+                               shadow-[0_6px_0_#1b150f] hover:brightness-95 rounded-lg">
                     S'inscrire
                 </button>
-                <a href="login.php" class="text-yellow-900 ml-11 text-[10px] underline">Déjà un compte ? Se connecter</a>
+                <a href="connexion.php" class="text-yellow-900 ml-11 text-xs underline">Déjà un compte ? Se connecter</a>
             </div>
         </form>
 
