@@ -1,7 +1,5 @@
 <?php
 
-// controllers/ChapterController.php
-
 require_once __DIR__ . '/../models/Chapter.php';
 
 class ChapterController
