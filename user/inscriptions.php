@@ -76,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!doctype html>
 <html lang="fr">
 <head>
@@ -86,10 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
-
 <body class="min-h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('../sprites/background/inscriptions.png'); font-family: 'Press Start 2P', monospace; image-rendering: pixelated;">
     <div class="max-w-2xl mx-auto my-10 px-4">
-        <h1 class="text-xl font-semibold mb-4 text-yellow-900">Inscription</h1>
 
         <?php if (!empty($errors)): ?>
             <div class="mb-4">
