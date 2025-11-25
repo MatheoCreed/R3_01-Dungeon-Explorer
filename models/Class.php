@@ -10,8 +10,9 @@ class GameClass
 	protected $strength;
 	protected $initiative;
 	protected $maxItems;
+	protected $image;
 
-	public function __construct($name, $description = '', $basePv = 0, $baseMana = 0, $strength = 0, $initiative = 0, $maxItems = 0, $id = null)
+	public function __construct($name, $description = '', $basePv = 0, $baseMana = 0, $strength = 0, $initiative = 0, $maxItems = 0, $id = null, $image = '')
 	{
 		$this->id = $id;
 		$this->name = $name;
@@ -21,6 +22,7 @@ class GameClass
 		$this->strength = (int)$strength;
 		$this->initiative = (int)$initiative;
 		$this->maxItems = (int)$maxItems;
+		$this->image = $image;
 	}
 
 	public function getId()
@@ -63,6 +65,11 @@ class GameClass
 		return $this->maxItems;
 	}
 
+	public function getImage()
+	{
+		return $this->image;
+	}
+
 	public function toArray()
 	{
 		return [
@@ -74,6 +81,7 @@ class GameClass
 			'strength' => $this->strength,
 			'initiative' => $this->initiative,
 			'max_items' => $this->maxItems,
+			'image' => $this->image
 		];
 	}
 

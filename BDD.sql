@@ -8,6 +8,7 @@ CREATE TABLE Class (
     strength INT NOT NULL,
     initiative INT NOT NULL,
     max_items INT NOT NULL
+    image VARCHAR(255);
 );
 
 -- Création de la table Items (Objets disponibles dans le jeu)

@@ -1,5 +1,4 @@
 <?php
-
 require 'autoload.php';
 
 class Router
@@ -44,7 +43,7 @@ $router = new Router('R3_01-Dungeon-Explorer');
 
 
 $router->addRoute('', 'AccueilController@index');
-$router->addRoute('temp_view', 'tempController@index');
+$router->addRoute('creation', 'CreationPersController@index');
 
 // DISPATCH
 $router->route($_GET['url'] ?? '');
