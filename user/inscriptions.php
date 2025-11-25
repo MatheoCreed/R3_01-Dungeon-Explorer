@@ -68,6 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $insert = $pdo->prepare("INSERT INTO users_aria (username, email, password_hash) VALUES (:username, :email, :password_hash)");
                     $insert->execute([':username' => $username, ':email' => $email, ':password_hash' => $password_hash]);
                     $success = "Inscription réussie. Vous pouvez maintenant vous connecter.";
+                    header('Location: connexion.php');
+
                 }
             } catch (PDOException $e) {
                 $errors[] = "Erreur base de données : " . htmlspecialchars($e->getMessage());

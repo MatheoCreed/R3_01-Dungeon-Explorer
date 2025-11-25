@@ -7,7 +7,7 @@ function load_env($path) {
     $env = [];
     foreach ($lines as $line) {
         if (strpos(trim($line), '#') === 0) continue;
-        if (!strpos($line, '=')) continue;
+        if (strpos($line, '=') === false) continue;
         list($k, $v) = explode('=', $line, 2);
         $env[trim($k)] = trim($v);
     }
@@ -33,22 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf']) || !hash_equals($token, $_POST['csrf'])) {
         $errors[] = "Requête invalide (CSRF).";
     } else {
-        $username = trim($_POST['username'] ?? '');
-        $email = trim($_POST['email'] ?? '');
+        $identifier = trim($_POST['identifier'] ?? ''); // username or email
         $password = $_POST['password'] ?? '';
-        $password_confirm = $_POST['password_confirm'] ?? '';
 
-        if ($username === '' || strlen($username) < 3) {
-            $errors[] = "Nom d'utilisateur requis (>= 3 caractères).";
+        if ($identifier === '') {
+            $errors[] = "Nom d'utilisateur ou email requis.";
         }
-        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = "Email invalide.";
-        }
-        if ($password === '' || strlen($password) < 6) {
-            $errors[] = "Mot de passe requis (>= 6 caractères).";
-        }
-        if ($password !== $password_confirm) {
-            $errors[] = "Les mots de passe ne correspondent pas.";
+        if ($password === '') {
+            $errors[] = "Mot de passe requis.";
         }
 
         if (empty($errors)) {
@@ -59,15 +51,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                 ]);
 
-                $stmt = $pdo->prepare("SELECT id FROM users_aria WHERE username = :username OR email = :email LIMIT 1");
-                $stmt->execute([':username' => $username, ':email' => $email]);
-                if ($stmt->fetch()) {
-                    $errors[] = "Nom d'utilisateur ou email déjà utilisé.";
+                $stmt = $pdo->prepare("SELECT id, username, password_hash FROM users_aria WHERE username = :ident OR email = :ident LIMIT 1");
+                $stmt->execute([':ident' => $identifier]);
+                $user = $stmt->fetch();
+
+                if (!$user || !password_verify($password, $user['password_hash'])) {
+                    $errors[] = "Identifiants incorrects.";
                 } else {
-                    $password_hash = password_hash($password, PASSWORD_DEFAULT);
-                    $insert = $pdo->prepare("INSERT INTO users_aria (username, email, password_hash) VALUES (:username, :email, :password_hash)");
-                    $insert->execute([':username' => $username, ':email' => $email, ':password_hash' => $password_hash]);
-                    $success = "Inscription réussie. Vous pouvez maintenant vous connecter.";
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $user['username'];
+                    header('Location: gestion_compte.php');
+                    exit;
                 }
             } catch (PDOException $e) {
                 $errors[] = "Erreur base de données : " . htmlspecialchars($e->getMessage());
@@ -80,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Inscription — Dungeon Explorer</title>
+    <title>Connexion — Dungeon Explorer</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -105,22 +99,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
         <?php endif; ?>
+
         <form method="post" action="" class="max-w-md mx-auto bg-gradient-to-b from-[#f4e7c8] via-[#e6cf97] to-[#ddbf74] border-8 border-[#2b2116] p-5 rounded-lg shadow-lg">
             <input type="hidden" name="csrf" value="<?= htmlspecialchars($token) ?>">
 
             <div class="flex items-center justify-between mt-3">
-                <div class="text-[#2b2116] text-sm font-medium">Email</div>
-                <div class="text-[#6b5341] text-xs">email@exemple.com</div>
+                <div class="text-[#2b2116] text-sm font-medium">Nom d'utilisateur ou Email</div>
+                <div class="text-[#6b5341] text-xs">username ou email</div>
             </div>
             <label class="block mt-2">
-                <input type="email" name="email" required
-                       value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
+                <input type="text" name="identifier" required
+                       value="<?= htmlspecialchars($_POST['identifier'] ?? '') ?>"
                        class="w-full mt-2 bg-[#fff8e6] border-4 border-[#2b2116] shadow-inner shadow-[inset_0_-6px_0_rgba(0,0,0,0.08)] p-2 tracking-wider text-sm focus:outline-none rounded-lg">
             </label>
 
             <div class="flex items-center justify-between mt-3">
                 <div class="text-[#2b2116] text-sm font-medium">Mot de passe</div>
-                <div class="text-[#6b5341] text-xs">min 6 caractères</div>
+                <div class="text-[#6b5341] text-xs">votre mot de passe</div>
             </div>
             <label class="block mt-2">
                 <input type="password" name="password" required
