@@ -1,16 +1,58 @@
 <?php
-// index.php - redirect directly to chapter_view.php
 
-require_once __DIR__ . '/Database.php'; // ce fichier créé $db (PDO)
+
+require_once __DIR__ . '/Database.php'; 
 
 require_once __DIR__ . '/controllers/ChapterController.php';
 
-$pdo = $db; // Database.php expose $db
+$pdo = $db; 
 
-$controller = new ChapterController($pdo);
+$chapterController = new ChapterController($pdo);
 
-// Récupère l'id du chapitre demandé (par défaut 1)
 $chapterId = isset($_GET['chapter']) ? (int)$_GET['chapter'] : 1;
-$controller->show($chapterId);
+require 'autoload.php';
+
+class Router
+{
+    private $routes = [];
+    private $prefix;
+
+    public function __construct($prefix = '')
+    {
+        $this->prefix = trim($prefix, '/');
+    }
+
+    public function addRoute($uri, $controllerMethod)
+    {
+        $this->routes[trim($uri, '/')] = $controllerMethod;
+    }
+
+    public function route($url)
+    {
+        
+        $url = trim($url, '/');
+
+        if (isset($this->routes[$url])) {
+
+            list($controllerName, $methodName) = explode('@', $this->routes[$url]);
+
+            require_once "controllers/$controllerName.php";
+
+            $controller = new $controllerName();
+            $controller->$methodName();
+            return;
+        }
+
+        require 'views/404.php';
+    }
+}
+
+$router = new Router('R3_01-Dungeon-Explorer');
+
+
+$router->addRoute('', 'AccueilController@index');
+
+$router->route($_GET['url'] ?? '');
 
 ?>
+

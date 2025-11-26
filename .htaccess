@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteBase /R3_01-Dungeon-Explorer/
+
+# ignorer les vrais fichiers
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# envoyer vers index.php
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
