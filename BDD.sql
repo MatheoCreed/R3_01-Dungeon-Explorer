@@ -92,6 +92,7 @@ CREATE TABLE Level (
 -- Création de la table Chapter (Chapitres de l'histoire)
 CREATE TABLE Chapter (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) DEFAULT 'Chapitre',
     content TEXT NOT NULL,
     image VARCHAR(255)
 );
@@ -171,7 +172,7 @@ CREATE TABLE Links (
     id INT AUTO_INCREMENT PRIMARY KEY,
     chapter_id INT,
     next_chapter_id INT,
-    description TEXT,
+    choice_text TEXT,
     FOREIGN KEY (chapter_id) REFERENCES Chapter(id),
     FOREIGN KEY (next_chapter_id) REFERENCES Chapter(id)
 );

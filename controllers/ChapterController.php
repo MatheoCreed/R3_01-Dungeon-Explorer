@@ -6,55 +6,43 @@ require_once __DIR__ . '/../models/Chapter.php';
 
 class ChapterController
 {
-    private $chapters = [];
+    private $pdo;
 
-    public function __construct()
+    public function __construct(PDO $pdo)
     {
-        // Exemple de chapitres avec des images
-        $this->chapters[] = new Chapter(
-            1,
-            "La Forêt Enchantée",
-            "Vous vous trouvez dans une forêt sombre et enchantée. Deux chemins se présentent à vous.",
-            "../sprites/background/foret1.png", // Chemin vers l'image
-            [
-                ["text" => "Aller à gauche", "chapter" => 2],
-                ["text" => "Aller à droite", "chapter" => 3]
-            ]
-        );
+        $this->pdo = $pdo;
+    }
 
-        $this->chapters[] = new Chapter(
-            2,
-            "Le Lac Mystérieux",
-            "Vous arrivez à un lac aux eaux limpides. Une créature vous observe.",
-            "../sprites/background/clairierePierre1.png", // Chemin vers l'image
-            [
-                ["text" => "Nager dans le lac", "chapter" => 4],
-                ["text" => "Faire demi-tour", "chapter" => 1]
-            ]
-        );
+    // Charge un Chapter et ses choix depuis la BDD
+    public function getChapter($id)
+    {
+        $stmt = $this->pdo->prepare('SELECT id, title, content AS description, image FROM Chapter WHERE id = ?');
+        $stmt->execute([(int)$id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return null;
 
+        // Récupération des choix (Links)
+        $stmt2 = $this->pdo->prepare('SELECT next_chapter_id, choice_text FROM Links WHERE chapter_id = ? ORDER BY id ASC');
+        $stmt2->execute([(int)$id]);
+        $choices = [];
+        while ($r = $stmt2->fetch(PDO::FETCH_ASSOC)) {
+            $choices[] = ['text' => $r['choice_text'], 'chapter' => (int)$r['next_chapter_id']];
+        }
+
+        return new Chapter($row['id'], $row['title'] ?? '', $row['description'] ?? '', $row['image'] ?? '', $choices);
     }
 
     public function show($id)
     {
         $chapter = $this->getChapter($id);
-
         if ($chapter) {
-            include __DIR__ . '/../views/chapter_view.php'; // Charge la vue pour le chapitre
+            // La vue `chapter_view.php` attend $chapter ; on passe aussi le controller si besoin
+            $chapterController = $this;
+            $chapterId = $id;
+            include __DIR__ . '/../views/chapter_view.php';
         } else {
-            // Si le chapitre n'existe pas, redirige vers un chapitre par défaut ou affiche une erreur
             header('HTTP/1.0 404 Not Found');
-            echo "Chapitre non trouvé!";
+            echo "Chapitre non trouvé";
         }
-    }
-
-    public function getChapter($id)
-    {
-        foreach ($this->chapters as $chapter) {
-            if ($chapter->getId() == $id) {
-                return $chapter;
-            }
-        }
-        return null; // Chapitre non trouvé
     }
 }
