@@ -1,25 +1,7 @@
 <?php
 session_start();
 
-function load_env($path) {
-    if (!file_exists($path)) return [];
-    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    $env = [];
-    foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0) continue;
-        if (!strpos($line, '=')) continue;
-        list($k, $v) = explode('=', $line, 2);
-        $env[trim($k)] = trim($v);
-    }
-    return $env;
-}
-
-$env = load_env(dirname(__DIR__) . '/.env');
-
-$dbHost = $env['DB_HOST'] ?? 'localhost';
-$dbName = $env['DB_NAME'] ?? 'dungeon_explorer';
-$dbUser = $env['DB_USER'] ?? 'root';
-$dbPass = $env['DB_PASSWORD'] ?? '';
+require_once __DIR__ . '/../Database.php';
 
 $errors = [];
 $success = null;
@@ -53,23 +35,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (empty($errors)) {
             try {
-                $dsn = "mysql:host={$dbHost};dbname={$dbName};charset=utf8mb4";
-                $pdo = new PDO($dsn, $dbUser, $dbPass, [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                ]);
-
-                $stmt = $pdo->prepare("SELECT id FROM users_aria WHERE username = :username OR email = :email LIMIT 1");
+                $stmt = $db->prepare("SELECT id FROM users_aria WHERE username = :username OR email = :email LIMIT 1");
                 $stmt->execute([':username' => $username, ':email' => $email]);
                 if ($stmt->fetch()) {
                     $errors[] = "Nom d'utilisateur ou email déjà utilisé.";
                 } else {
                     $password_hash = password_hash($password, PASSWORD_DEFAULT);
-                    $insert = $pdo->prepare("INSERT INTO users_aria (username, email, password_hash) VALUES (:username, :email, :password_hash)");
+                    $insert = $db->prepare("INSERT INTO users_aria (username, email, password_hash) VALUES (:username, :email, :password_hash)");
                     $insert->execute([':username' => $username, ':email' => $email, ':password_hash' => $password_hash]);
                     $success = "Inscription réussie. Vous pouvez maintenant vous connecter.";
                     header('Location: connexion.php');
-
+                    exit;
                 }
             } catch (PDOException $e) {
                 $errors[] = "Erreur base de données : " . htmlspecialchars($e->getMessage());

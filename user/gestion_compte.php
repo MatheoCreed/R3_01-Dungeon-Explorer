@@ -1,25 +1,7 @@
 <?php
 session_start();
 
-function load_env($path) {
-    if (!file_exists($path)) return [];
-    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    $env = [];
-    foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0) continue;
-        if (strpos($line, '=') === false) continue;
-        list($k, $v) = explode('=', $line, 2);
-        $env[trim($k)] = trim($v);
-    }
-    return $env;
-}
-
-$env = load_env(dirname(__DIR__) . '/.env');
-
-$dbHost = $env['DB_HOST'] ?? 'localhost';
-$dbName = $env['DB_NAME'] ?? 'dungeon_explorer';
-$dbUser = $env['DB_USER'] ?? 'root';
-$dbPass = $env['DB_PASSWORD'] ?? '';
+require_once __DIR__ . '/../Database.php';
 
 $errors = [];
 $success = null;
@@ -37,13 +19,7 @@ if (empty($_SESSION['user_id'])) {
 $userId = (int) $_SESSION['user_id'];
 
 try {
-    $dsn = "mysql:host={$dbHost};dbname={$dbName};charset=utf8mb4";
-    $pdo = new PDO($dsn, $dbUser, $dbPass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
-
-    $stmt = $pdo->prepare("SELECT id, username, email, password_hash FROM users_aria WHERE id = :id LIMIT 1");
+    $stmt = $db->prepare("SELECT id, username, email, password_hash FROM users_aria WHERE id = :id LIMIT 1");
     $stmt->execute([':id' => $userId]);
     $currentUser = $stmt->fetch();
     if (!$currentUser) {
@@ -71,13 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (empty($errors)) {
                 try {
-                    $stmt = $pdo->prepare("SELECT id FROM users_aria WHERE (username = :username OR email = :email) AND id != :id LIMIT 1");
+                    $stmt = $db->prepare("SELECT id FROM users_aria WHERE (username = :username OR email = :email) AND id != :id LIMIT 1");
                     $stmt->execute([':username' => $username, ':email' => $email, ':id' => $userId]);
                     $exists = $stmt->fetch();
                     if ($exists) {
                         $errors[] = "Le nom d'utilisateur ou l'email est déjà utilisé par un autre compte.";
                     } else {
-                        $stmt = $pdo->prepare("UPDATE users_aria SET username = :username, email = :email WHERE id = :id");
+                        $stmt = $db->prepare("UPDATE users_aria SET username = :username, email = :email WHERE id = :id");
                         $stmt->execute([':username' => $username, ':email' => $email, ':id' => $userId]);
                         $_SESSION['username'] = $username;
                         $success = "Profil mis à jour.";
@@ -118,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['pw_change_attempts'][] = time();
                     } else {
                         $newHash = password_hash($new, PASSWORD_DEFAULT);
-                        $stmt = $pdo->prepare("UPDATE users_aria SET password_hash = :ph WHERE id = :id");
+                        $stmt = $db->prepare("UPDATE users_aria SET password_hash = :ph WHERE id = :id");
                         $stmt->execute([':ph' => $newHash, ':id' => $userId]);
                         $success = "Mot de passe mis à jour.";
                         $_SESSION['pw_change_attempts'] = [];
@@ -137,11 +113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (!password_verify($confirmPwd, $currentUser['password_hash'])) {
                         $errors[] = "Mot de passe incorrect. Suppression annulée.";
                     } else {
-                        $stmt = $pdo->prepare("DELETE FROM users_aria WHERE id = :id");
+                        $stmt = $db->prepare("DELETE FROM users_aria WHERE id = :id");
                         $stmt->execute([':id' => $userId]);
                         session_unset();
                         session_destroy();
-                        header('Location: inscriptions.php');
+                        header('Location: inscriptions.php?account_deleted=1');
                         exit;
                     }
                 } catch (PDOException $e) {
