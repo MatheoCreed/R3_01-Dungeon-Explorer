@@ -12,7 +12,7 @@
     <img src="/R3_01-Dungeon-Explorer/sprites/icon/Logo.png" class="logo" alt="Logo du jeu">
 
     <div class="buttons">
-        <a href="creation" class="btn">Se connecter</a>
+        <a href="" class="btn">Se connecter</a>
         <a href="" class="btn">S'inscrire</a>
     </div>
 

@@ -1,37 +1,19 @@
-const buttons = document.querySelectorAll(".class-btn");
+document.addEventListener("DOMContentLoaded", () => {
 
-buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
+    if (!Array.isArray(classes)) {
+        console.error("classes n'est pas un tableau", classes);
+        return;
+    }
 
-        document.getElementById("className").textContent = btn.dataset.name;
-        document.getElementById("classDesc").textContent = btn.dataset.desc;
+    const classList = document.getElementById("classList");
+    const img = document.getElementById("classImg");
 
-        setStat("pv", btn.dataset.pv);
-        setStat("mana", btn.dataset.mana);
-        setStat("str", btn.dataset.str);
-        setStat("ini", btn.dataset.ini);
+    function setStat(name, value) {
+        document.getElementById(name+"Val").textContent = value;
+        document.getElementById(name+"Bar").style.width = value+"px";
+    }
 
-        document.getElementById("maxVal").textContent = btn.dataset.max;
-
-        document.getElementById("classImg").src = btn.dataset.img;
-    });
-});
-
-function setStat(name, value) {
-    document.getElementById(name+"Val").textContent = value;
-    document.getElementById(name+"Bar").style.width = value+"px";
-}
-
-const img = document.getElementById("classImg");
-
-buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-
-        // retire sélection
-        buttons.forEach(b => b.classList.remove("selected"));
-
-        // ajoute sélection
-        btn.classList.add("selected");
+    function selectClass(btn) {
 
         document.getElementById("className").textContent = btn.dataset.name;
         document.getElementById("classDesc").textContent = btn.dataset.desc;
@@ -43,12 +25,40 @@ buttons.forEach(btn => {
 
         document.getElementById("maxVal").textContent = btn.dataset.max;
 
-        // ANIMATION IMAGE
         img.classList.remove("visible");
         img.src = btn.dataset.img;
 
         setTimeout(() => {
             img.classList.add("visible");
         }, 50);
-    });
+
+        document
+            .querySelectorAll(".class-btn")
+            .forEach(b => b.classList.remove("selected"));
+
+        btn.classList.add("selected");
+    }
+
+    function makeButton(c) {
+        const btn = document.createElement("button");
+        btn.className = "class-btn";
+
+        btn.dataset.name = c.name;
+        btn.dataset.desc = c.desc;
+        btn.dataset.pv = c.pv;
+        btn.dataset.mana = c.mana;
+        btn.dataset.str = c.str;
+        btn.dataset.ini = c.ini;
+        btn.dataset.max = c.max;
+        btn.dataset.img = c.img;
+
+        btn.textContent = c.name;
+
+        btn.addEventListener("click", () => selectClass(btn));
+
+        return btn;
+    }
+
+    classes.forEach(c => classList.appendChild(makeButton(c)));
 });
+
