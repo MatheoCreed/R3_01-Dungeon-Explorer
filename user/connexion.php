@@ -1,6 +1,6 @@
 <?php
+global $db;
 session_start();
-
 require_once __DIR__ . '/../Database.php';
 
 $errors = [];
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
-                    header('Location: gestion_compte.php');
+                    header('Location: gestionCompte');
                     exit;
                 }
             } catch (PDOException $e) {
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
-<body class="min-h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('../sprites/background/connexion.png'); font-family: 'Press Start 2P', monospace; image-rendering: pixelated;">
+<body class="min-h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('/R3_01-Dungeon-Explorer/sprites/background/connexion.png'); font-family: 'Press Start 2P', monospace; image-rendering: pixelated;">
     <div class="max-w-2xl mx-auto my-10 px-4">
 
         <?php if (!empty($errors)): ?>
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                shadow-[0_6px_0_#1b150f] hover:brightness-95 rounded-lg">
                     Se connecter
                 </button>
-                <a href="inscriptions.php" class="text-yellow-900 ml-11 text-xs underline">Pas encore de compte ? S'inscrire</a>
+                <a href="inscriptions" class="text-yellow-900 ml-11 text-xs underline">Pas encore de compte ? S'inscrire</a>
             </div>
         </form>
 

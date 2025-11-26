@@ -1,6 +1,5 @@
 <?php
 
-// controllers/ChapterController.php
 
 require_once __DIR__ . '/../models/Chapter.php';
 
@@ -13,7 +12,6 @@ class ChapterController
         $this->pdo = $pdo;
     }
 
-    // Charge un Chapter et ses choix depuis la BDD
     public function getChapter($id)
     {
         $stmt = $this->pdo->prepare('SELECT id, title, content AS description, image FROM Chapter WHERE id = ?');
@@ -21,7 +19,6 @@ class ChapterController
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) return null;
 
-        // Récupération des choix (Links)
         $stmt2 = $this->pdo->prepare('SELECT next_chapter_id, choice_text FROM Links WHERE chapter_id = ? ORDER BY id ASC');
         $stmt2->execute([(int)$id]);
         $choices = [];
@@ -36,7 +33,6 @@ class ChapterController
     {
         $chapter = $this->getChapter($id);
         if ($chapter) {
-            // La vue `chapter_view.php` attend $chapter ; on passe aussi le controller si besoin
             $chapterController = $this;
             $chapterId = $id;
             include __DIR__ . '/../views/chapter_view.php';

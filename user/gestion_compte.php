@@ -1,6 +1,7 @@
 <?php
+global $db;
 session_start();
-
+// session_abort();
 require_once __DIR__ . '/../Database.php';
 
 $errors = [];
@@ -24,7 +25,7 @@ try {
     $currentUser = $stmt->fetch();
     if (!$currentUser) {
         session_destroy();
-        header('Location: connexion.php');
+        header('Location: connexion');
         exit;
     }
 } catch (PDOException $e) {
@@ -117,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $stmt->execute([':id' => $userId]);
                         session_unset();
                         session_destroy();
-                        header('Location: inscriptions.php?account_deleted=1');
+                        header('Location: inscriptions?account_deleted=1');
                         exit;
                     }
                 } catch (PDOException $e) {
@@ -138,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>body{font-family: 'Press Start 2P', monospace; image-rendering: pixelated;}</style>
 </head>
-<body class="min-h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('../sprites/background/compte.png');">
+<body class="min-h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('/R3_01-Dungeon-Explorer/sprites/background/compte.png');">
     <div class="max-w-2xl mx-auto my-10 px-4">
 
         <?php if (!empty($errors)): ?>

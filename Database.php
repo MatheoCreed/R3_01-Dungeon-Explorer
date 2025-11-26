@@ -1,5 +1,5 @@
 <?php
-
+// session_start();
 // core/Database.php
 
 // Chemin vers le fichier .env

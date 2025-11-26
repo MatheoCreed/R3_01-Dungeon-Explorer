@@ -15,7 +15,7 @@
         <h1 class="error-title">404</h1>
 
         <p class="error-text">
-            Le chemin que vous cherchez semble avoir disparu dans les ombres du donjon…
+            Le chemin que vous cherchez semble avoir disparu dans les profondeurs du donjon…
         </p>
 
         <a href="/R3_01-Dungeon-Explorer/" class="btn">Retour à l'accueil</a>
