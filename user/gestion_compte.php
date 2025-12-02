@@ -218,8 +218,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <div class="flex items-center justify-between">
                     <button type="submit" class="text-white text-sm px-4 py-2 bg-gradient-to-b from-[#a11] to-[#700] border-[5px] border-[#2b2116] shadow-[0_6px_0_#1b150f] hover:brightness-95 rounded-lg">Supprimer mon compte</button>
-                    <a href="../index.php" class="text-yellow-900 ml-11 text-xs underline">Annuler</a>
+                    <a href="index" class="text-yellow-900 ml-11 text-xs underline">Annuler</a>
                 </div>
+                <div></div>
             </form>
 
         </div>

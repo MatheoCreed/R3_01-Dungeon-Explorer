@@ -51,6 +51,7 @@ $router = new Router('R3_01-Dungeon-Explorer');
 
 
 $router->addRoute('', 'AccueilController@index');
+$router->addRoute('index', 'AccueilController@index');
 $router->addRoute('connexion', 'ConnexionController@index');
 $router->addRoute('inscriptions', 'InscriptionController@index');
 $router->addRoute('gestionCompte', 'GestionCompteController@index');
