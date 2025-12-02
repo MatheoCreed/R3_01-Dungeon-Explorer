@@ -1,6 +1,7 @@
 
 <?php
-// Start session and load DB to fetch current user directly (no helper)
+global $db;
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -8,8 +9,8 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../../Database.php';
 
 $currentUser = null;
-$isAdmin = false;
 
+// $admin = $_SESSION['is_admin'];
 if (!empty($_SESSION['user_id'])) {
     try {
         $stmt = $db->prepare("SELECT id, username, 
@@ -24,13 +25,18 @@ if (!empty($_SESSION['user_id'])) {
     }
 }
 
-$isAdmin = !empty($currentUser['is_admin']);
 
-// Fallback display values when user is not logged in
-$displayName = $currentUser['username'] ?? 'Invité';
+
+// $displayName = $currentUser['username'] ?? 'Invité';
 $level = (int)($currentUser['current_level'] ?? 1);
 $xp = (int)($currentUser['xp'] ?? 0);
-$xp_max = 1000; // optional: change if you have a dynamic xp max
+$displayName = $_SESSION['username'] ?? 'Invité';
+$xp_max = 1000; 
+$id = $_SESSION['user_id'];
+$stmt= $db->prepare("SELECT is_admin FROM users_aria where id = :id");
+$stmt->execute([':id' => $id]);
+$admin = $stmt->fetch();
+var_dump($admin)
 ?>
 
 <!DOCTYPE html>
@@ -38,13 +44,13 @@ $xp_max = 1000; // optional: change if you have a dynamic xp max
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="views\user\style.css">
     <title>Page utilisateur</title>
     
 </head>
 <body>
     
-    <img src="../../sprites/joueur/guerrierMale/doubleHache/guerrierMaleDoubleHache1-Photoroom.png" alt="guerrier" class="guerrier-image">
+    <img src="sprites\joueur\guerrierMale\doubleHache\guerrierMaleDoubleHache1-Photoroom.png" alt="guerrier" class="guerrier-image">
     <div class="nameplate">
         <p><?= htmlspecialchars($displayName) ?></p>
     </div>
@@ -53,9 +59,11 @@ $xp_max = 1000; // optional: change if you have a dynamic xp max
         <button class="btn">Continuer</button>
         <button class="btn">Nouvelle partie</button>
         <button class="btn">Supprimer Sauvegarde</button>
-        <?php if ($isAdmin): ?>
-            <button class="btn" onclick="location.href='../admin/admin.php'">Accès admin</button>
+        <!-- <button class="btn" onclick="location.href='admin'">Accès admin</button> -->
+        <?php if (!empty($admin) && isset($admin['is_admin']) && (int)$admin['is_admin'] === 1): ?>
+        <button class="btn" onclick="location.href='admin'">Accès admin</button>
         <?php endif; ?>
+
     </div>
 
     <div class="xp-container">
