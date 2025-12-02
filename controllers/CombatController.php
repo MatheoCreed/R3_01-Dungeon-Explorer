@@ -34,6 +34,37 @@ class CombatController
         return new Chapter($row['id'], $row['title'] ?? '', $row['description'] ?? '', $row['image'] ?? '', $choices);
     }
 
+    public function getMonster($chapterId) {
+        $stmt = $this->pdo->prepare('SELECT chapter_id, monster_id FROM encounter WHERE chapter_id = ?');
+        $stmt->execute([(int)$chapterId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return null;
+        $monster_id = $row['monster_id'];
+
+        $stmt = $this->pdo->prepare('SELECT id, name, pv, mana, initiative, strength, attack, xp, image FROM Monster WHERE id = ?');
+        $stmt->execute([(int)$monster_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return null;
+        
+        $stmt = $this->pdo->prepare('SELECT ml.item_id, IFNULL(i.name, CONCAT("item_", ml.item_id)) AS item_name, ml.quantity FROM Monster_Loot ml JOIN Items i ON ml.item_id = i.id WHERE ml.monster_id = ?');
+        $stmt->execute([(int)$monster_id]);
+
+        // Construire un tableau associatif item_name => quantity
+        $treasures = [];
+        while ($loot = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $itemName = $loot['item_name'] ?? ('item_' . ($loot['item_id'] ?? '')); 
+            $quantity = (int)($loot['quantity'] ?? 0);
+            // Si le même item apparaît plusieurs fois, additionner les quantités
+            if (isset($treasures[$itemName])) {
+                $treasures[$itemName] += $quantity;
+            } else {
+                $treasures[$itemName] = $quantity;
+            }
+        }
+
+        return new Monster($row['name'], $row['pv'] ?? '', $row['mana'] ?? '', $row['initiative'] ?? '', $row['strength'] ?? '', $row['attack'] ?? '', $row['xp'] ?? '', $treasures, $row['image'] ?? '');
+    }
+
     public function show($id)
     {
         $chapter = $this->getChapter($id);

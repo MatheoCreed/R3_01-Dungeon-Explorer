@@ -7,26 +7,43 @@
 if (!isset($chapter)) {
     if (isset($chapterController) && isset($chapterId) && method_exists($chapterController, 'getChapter')) {
         $chapter = $chapterController->getChapter($chapterId);
-    } elseif (class_exists('Chapter')) {
-        // Crée un chapitre d'exemple pour l'aperçu
-        $chapter = new Chapter(
-            0,
-            'Aperçu — Chapitre',
-            'Contenu de démonstration pour la vue de chapitre.',
-            'sprites/background/foret1.png',
-            [
-                ['text' => 'Option A', 'chapter' => 1],
-                ['text' => 'Option B', 'chapter' => 2]
-            ]
-        );
+    }
+}
+
+// Vérifier s'il y a une rencontre pour ce chapitre
+$hasEncounter = false;
+$encounterMonsterId = null;
+// Si un CombatController est disponible, essaye d'obtenir le monstre
+if (isset($combatController) && method_exists($combatController, 'getMonster')) {
+    // try by chapter object or id
+    if (isset($chapter) && is_object($chapter)) {
+        $m = $combatController->getMonster($chapter->getId());
+    } elseif (isset($chapterId)) {
+        $m = $combatController->getMonster($chapterId);
     } else {
-        // Fallback minimal si la classe Chapter n'est pas disponible
-        $chapter = new class {
-            public function getTitle() { return 'Aperçu — Chapitre'; }
-            public function getImage() { return ''; }
-            public function getDescription() { return 'Contenu de démonstration pour la vue de chapitre.'; }
-            public function getChoices() { return []; }
-        };
+        $m = null;
+    }
+    if ($m) {
+        $hasEncounter = true;
+        // try to get monster id if object exposes it
+        if (method_exists($m, 'getId')) {
+            $encounterMonsterId = $m->getId();
+        }
+    }
+}
+
+// Sinon, si une connexion DB globale $db existe, interroger la table Encounter
+if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
+    try {
+        $stmtEnc = $GLOBALS['db']->prepare('SELECT monster_id FROM Encounter WHERE chapter_id = ? LIMIT 1');
+        $stmtEnc->execute([isset($chapter) && is_object($chapter) ? $chapter->getId() : ($chapterId ?? 0)]);
+        $erow = $stmtEnc->fetch(PDO::FETCH_ASSOC);
+        if ($erow && !empty($erow['monster_id'])) {
+            $hasEncounter = true;
+            $encounterMonsterId = (int)$erow['monster_id'];
+        }
+    } catch (Exception $e) {
+        // ignore DB errors in view
     }
 }
 ?>
@@ -63,12 +80,24 @@ if (!isset($chapter)) {
                 <div class="h-2 my-4 bg-[repeating-linear-gradient(90deg,#2b2116_0_4px,#5b452f_4px_8px)]"></div>
 
                 <div class="grid gap-3">
-                    <?php foreach ($chapter->getChoices() as $choice): ?>
-                        <a href="index.php?chapter=<?php echo (int)$choice['chapter']; ?>"
-                           class="block text-center py-3 px-4 rounded-lg bg-gradient-to-b from-[#8b3b0f] to-[#5b1f05] border-[5px] border-[#2b2116] text-white text-[12px] hover:brightness-95 transition">
-                            <?php echo htmlspecialchars($choice['text']); ?>
-                        </a>
-                    <?php endforeach; ?>
+                    <?php if ($hasEncounter): ?>
+                        <!-- Formulaire POST pour combattre (au lieu de lien GET) -->
+                        <form method="post" action="index.php">
+                            <input type="hidden" name="action" value="fight">
+                            <input type="hidden" name="chapter_id" value="<?php echo (int)($chapter->getId() ?? $chapterId ?? 0); ?>">
+                            <button type="submit" class="w-full text-center py-3 px-4 rounded-lg bg-gradient-to-b from-[#c53030] to-[#8b0000] border-[5px] border-[#2b2116] text-white text-[12px] hover:brightness-95 transition">
+                                Combattre
+                            </button>
+                        </form>
+                    <?php else: ?>
+                        <!-- Choix normaux -->
+                        <?php foreach ($chapter->getChoices() as $choice): ?>
+                            <a href="index.php?chapter=<?php echo (int)$choice['chapter']; ?>"
+                            class="block text-center py-3 px-4 rounded-lg bg-gradient-to-b from-[#8b3b0f] to-[#5b1f05] border-[5px] border-[#2b2116] text-white text-[12px] hover:brightness-95 transition">
+                                <?php echo htmlspecialchars($choice['text']); ?>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
 

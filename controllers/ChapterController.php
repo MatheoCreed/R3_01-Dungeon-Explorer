@@ -16,7 +16,7 @@ class ChapterController
     // Charge un Chapter et ses choix depuis la BDD
     public function getChapter($HeroId)
     {
-        $stmt = $this->pdo->prepare('SELECT Chapter.id, title, content AS description, image FROM Chapter join Hero_progress on Chapter.hero_id = Hero.id WHERE Hero_progress.hero_id = ?');
+        $stmt = $this->pdo->prepare('SELECT ch.id, title, content AS description, image FROM Chapter ch join Hero_progress hp on ch.id = hp.chapter_id WHERE hp.hero_id = ?');
         $stmt->execute([(int)$HeroId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) return null;
