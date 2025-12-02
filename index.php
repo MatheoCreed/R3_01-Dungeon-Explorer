@@ -55,7 +55,7 @@ $router->addRoute('index', 'AccueilController@index');
 $router->addRoute('connexion', 'ConnexionController@index');
 $router->addRoute('inscriptions', 'InscriptionController@index');
 $router->addRoute('gestionCompte', 'GestionCompteController@index');
-
+$router->addRoute('creation', 'CreationPersController@index');
 
 $router->route($_GET['url'] ?? '');
 

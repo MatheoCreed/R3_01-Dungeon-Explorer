@@ -1,14 +1,14 @@
 body {
     margin: 0;
     padding: 0;
-    background: url("../sprites/background/pagePrincipale.png") no-repeat center center fixed;
+    background: url("../sprites/background/pagePrincipale.png") no-repeat center center fixed; 
     background-size: cover;
     font-family: Arial, sans-serif;
 }
 
 .container {
     text-align: center;
-    margin-top: 5%;
+    margin-top: 0%;
 }   
 
 .logo {
@@ -18,7 +18,7 @@ body {
 
 .btn {
     display: inline-block;
-    margin: 60px;
+    margin: 50px;
     padding: 15px 30px;
     width: 230px;
 
@@ -87,3 +87,197 @@ body {
     100% { opacity: 1; transform: scale(1.07); }
 }
 /* fin 404 */
+/* --- CREATION PERSONNAGE --- */
+
+.creation-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    margin-top: 100px;
+}
+
+/* LISTE DES CLASSES */
+.class-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    width: 400px;   
+    max-height: 300px;
+    padding: 10px;
+}
+
+.class-btn {
+    background: linear-gradient(145deg, #c9a43a, #f4d67a, #b58b2a);
+    border: 3px solid #8f6a1b;
+    border-radius: 15px;
+
+    box-shadow:
+        inset 0 0 10px rgba(255, 225, 150, 0.8),
+        0 0 15px rgba(0, 0, 0, 0.4);
+
+    padding: 10px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    width: 100%;
+}
+
+
+.class-btn.selected {
+    transform: scale(1.1);
+}
+
+/* STATS */
+.stats {
+    background: rgba(0,0,0,0.55);
+    padding: 20px 30px;
+    border: 4px solid #8f6a1b;
+    border-radius: 15px;
+    color: #ffe9a3;
+    width: 300px;
+    text-align: left;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.6),
+                0 0 15px rgba(0,0,0,0.7);
+    margin-top: 100px;
+}
+
+.stats h2 {
+    text-align: center;
+    font-family: "Cinzel", serif;
+    margin-bottom: 10px;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+/* BARRE STAT */
+.bar {
+    background: rgba(255,255,255,0.2);
+    width: 150px;
+    height: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1
+}
+.bar div {
+    height: 100%;
+    background: linear-gradient(90deg, #ffeb99, #d1aa3c);
+    width: 0;
+    transition: width 0.4s ease-out;
+    box-shadow: inset 0 0 5px rgba(255,240,190,0.5);
+}
+
+/* IMAGE PERSONNAGE */
+.image {
+    width: 500px;
+    height: 500px;
+    display: flex;
+    margin-top:  50px;
+    margin-left: 100px;
+}
+
+.image img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+/* --- BOUTON SELECTION --- */
+
+.class-btn.selected {
+    background: linear-gradient(145deg, #ffeb99, #f7d87c, #d1aa3c);
+    border-color: #ffd24a;
+    box-shadow:
+        inset 0 0 20px rgba(255,240,190,1),
+        0 0 25px rgba(255,200,80,1);
+    transform: scale(1.08);
+}
+
+/* --- IMAGE PERSONNAGE ANIMÉE --- */
+
+.image img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.image img.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Cadre or animé */
+.image {
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes goldGlow {
+    0% { border-color: rgba(255,220,130,0.3); }
+    100% { border-color: rgba(255,220,130,1); }
+}
+
+/* STAT ICONES */
+.stat span:first-child {
+    width: 80px;
+    display: inline-block;
+}
+/* BOUTON CREER PERSONNAGE */
+.create-btn {
+    background: linear-gradient(145deg, #c9a43a, #f4d67a, #b58b2a);
+    border: 3px solid #8f6a1b;
+    border-radius: 15px;
+    box-shadow:
+        inset 0 0 10px rgba(255, 225, 150, 0.8),
+        0 0 15px rgba(0, 0, 0, 0.4);
+
+    width: 300px;
+    margin: 00px auto 0;
+    padding: 12px;
+    font-size: 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    display: block;
+
+    color: #000000;
+}
+
+.create-btn:hover {
+    transform: scale(1.05);
+}
+
+.create-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 0px;
+}
+
+.name-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#heroName {
+    width: 300px;
+    padding: 10px;
+    font-size: 18px;
+    border-radius: 10px;
+    border: 3px solid #8f6a1b;
+    background: rgba(255, 245, 200, 0.8);
+    text-align: center;
+    outline: none;
+}
+
