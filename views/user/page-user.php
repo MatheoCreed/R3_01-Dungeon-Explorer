@@ -36,7 +36,6 @@ $id = $_SESSION['user_id'];
 $stmt= $db->prepare("SELECT is_admin FROM users_aria where id = :id");
 $stmt->execute([':id' => $id]);
 $admin = $stmt->fetch();
-var_dump($admin)
 ?>
 
 <!DOCTYPE html>
