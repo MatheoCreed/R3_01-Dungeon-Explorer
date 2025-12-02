@@ -1,9 +1,15 @@
-let xp = 600;     // XP actuelle
-let xp_max = 1000; // XP max
-let level = 5;   
+// Use data from PHP if provided via `window.USER_DATA`, otherwise fall back to defaults
+const userData = window.USER_DATA || null;
+let xp = userData ? Number(userData.xp) : 600;
+let xp_max = userData ? Number(userData.xp_max) : 1000;
+let level = userData ? Number(userData.level) : 5;
 
-let percent = (xp / xp_max) * 100;
+let percent = xp_max > 0 ? (xp / xp_max) * 100 : 0;
 
-document.getElementById("xp-fill").style.width = percent + "%";
-document.getElementById("xp-text").innerText = xp + " / " + xp_max + " XP";
-document.getElementById("level-text").innerText = "Niveau " + level;
+const xpFill = document.getElementById("xp-fill");
+const xpText = document.getElementById("xp-text");
+const levelText = document.getElementById("level-text");
+
+if (xpFill) xpFill.style.width = percent + "%";
+if (xpText) xpText.innerText = xp + " / " + xp_max + " XP";
+if (levelText) levelText.innerText = "Niveau " + level;
