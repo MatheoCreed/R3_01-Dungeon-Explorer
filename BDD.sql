@@ -188,3 +188,12 @@ CREATE TABLE Hero_Progress (
     FOREIGN KEY (hero_id) REFERENCES Hero(id),
     FOREIGN KEY (chapter_id) REFERENCES Chapter(id)
 );
+
+-- Création de la table users_aria (Utilisateurs pour l'interface Aria)
+CREATE TABLE users_aria (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    is_admin TINYINT(1) NOT NULL DEFAULT 0
+);
