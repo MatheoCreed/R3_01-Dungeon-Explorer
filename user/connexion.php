@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
-                    header('Location: gestionCompte');
+                    header('Location: pageUser');
                     exit;
                 }
             } catch (PDOException $e) {

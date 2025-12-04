@@ -1,64 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    if (!Array.isArray(classes)) {
-        console.error("classes n'est pas un tableau", classes);
-        return;
+    console.log("SCRIPT CHARGÉ + DOM OK");
+
+    const buttons = document.querySelectorAll('.class-btn');
+    console.log("Boutons trouvés :", buttons.length);
+
+    const img = document.getElementById('heroSprite');
+    const barPv = document.getElementById('bar-pv');
+    const barMana = document.getElementById('bar-mana');
+    const barStrength = document.getElementById('bar-strength');
+    const selectedClass = document.getElementById('selectedClass');
+
+    if (buttons.length === 0) {
+        console.warn("⚠ Aucun bouton de classe trouvé !");
+        return; // on arrête tout ici, pas la peine d’aller plus loin
     }
 
-    const classList = document.getElementById("classList");
-    const img = document.getElementById("classImg");
+    buttons.forEach(btn => {
 
-    function setStat(name, value) {
-        document.getElementById(name+"Val").textContent = value;
-        document.getElementById(name+"Bar").style.width = value+"px";
-    }
+        btn.addEventListener('click', () => {
 
-    function selectClass(btn) {
+            // Effacer l'ancienne sélection
+            buttons.forEach(b => b.classList.remove('selected'));
 
-        document.getElementById("className").textContent = btn.dataset.name;
-        document.getElementById("classDesc").textContent = btn.dataset.desc;
+            // Sélectionner le bouton
+            btn.classList.add('selected');
 
-        setStat("pv", btn.dataset.pv);
-        setStat("mana", btn.dataset.mana);
-        setStat("str", btn.dataset.str);
-        setStat("ini", btn.dataset.ini);
+            // Enregistrer l'ID de la classe choisie dans le formulaire
+            selectedClass.value = btn.dataset.id;
 
-        document.getElementById("maxVal").textContent = btn.dataset.max;
+            // --- Sprite ---
+            img.classList.remove("visible"); // animation
 
-        img.classList.remove("visible");
-        img.src = btn.dataset.img;
+            setTimeout(() => {
+                img.src = btn.dataset.sprite;
+                img.classList.add("visible");
+            }, 200);
 
-        setTimeout(() => {
-            img.classList.add("visible");
-        }, 50);
-
-        document
-            .querySelectorAll(".class-btn")
-            .forEach(b => b.classList.remove("selected"));
-
-        btn.classList.add("selected");
-    }
-
-    function makeButton(c) {
-        const btn = document.createElement("button");
-        btn.className = "class-btn";
-
-        btn.dataset.name = c.name;
-        btn.dataset.desc = c.desc;
-        btn.dataset.pv = c.pv;
-        btn.dataset.mana = c.mana;
-        btn.dataset.str = c.str;
-        btn.dataset.ini = c.ini;
-        btn.dataset.max = c.max;
-        btn.dataset.img = c.img;
-
-        btn.textContent = c.name;
-
-        btn.addEventListener("click", () => selectClass(btn));
-
-        return btn;
-    }
-
-    classes.forEach(c => classList.appendChild(makeButton(c)));
+            // --- Stats ---
+            barPv.style.width = btn.dataset.hp + "%";
+            barMana.style.width = btn.dataset.atk + "%";
+            barStrength.style.width = btn.dataset.def + "%";
+        });
+    });
 });
-
