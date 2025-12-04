@@ -1,6 +1,5 @@
 <?php
 
-
 require_once __DIR__ . '/Database.php'; 
 
 require_once __DIR__ . '/controllers/ChapterController.php';
@@ -55,9 +54,10 @@ $router->addRoute('index', 'AccueilController@index');
 $router->addRoute('connexion', 'ConnexionController@index');
 $router->addRoute('inscriptions', 'InscriptionController@index');
 $router->addRoute('gestionCompte', 'GestionCompteController@index');
-$router->addRoute('creation', 'CreationPersController@index');
-$router->addRoute('page-user', 'PageUserController@index');
-$router->addRoute('admin', 'AdminController@index');
+$router->addRoute('pageUser', 'PageUserController@index');
+$router->addRoute('hero/create', 'HeroController@createPage');
+$router->addRoute('hero/insert', 'HeroController@insert');
+$router->addRoute('hero/show', 'HeroController@show');
 
 
 $router->route($_GET['url'] ?? '');
