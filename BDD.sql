@@ -179,11 +179,8 @@ CREATE TABLE Links (
 
 -- Table intermédiaire pour le suivi de progression (Hero - Chapter)
 CREATE TABLE Hero_Progress (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    hero_id INT,
-    chapter_id INT,
-    status VARCHAR(20) DEFAULT 'Completed', -- Ex: 'Started', 'Completed', 'Failed'
-    completion_date DATETIME, -- Pour marquer quand le chapitre a été terminé
+    hero_id INT PRIMARY KEY,
+    chapter_id INT PRIMARY KEY, 
     FOREIGN KEY (hero_id) REFERENCES Hero(id),
     FOREIGN KEY (chapter_id) REFERENCES Chapter(id)
 );

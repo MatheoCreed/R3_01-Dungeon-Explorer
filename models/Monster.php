@@ -2,7 +2,7 @@
 
 // models/Monster.php
 
-abstract class Monster
+class Monster
 {
     protected $name;
     protected $health;
@@ -50,7 +50,7 @@ abstract class Monster
 
     public function getAttack()
     {
-        return this->attack;
+        return $this->attack;
     }
 
     public function getInitiative()

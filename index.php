@@ -12,12 +12,43 @@ $chapterController = new ChapterController($pdo);
 
 $chapterId = isset($_GET['chapter']) ? (int)$_GET['chapter'] : 1;
 
-// --- Shortcut: bypass the router and go directly to the chapter view -------
-// This will ignore the rest of the routing/login logic and immediately
-// display the requested chapter. Keep the original router code below
-// commented out so it can be restored later if needed.
+// Traiter les actions POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    if ($_POST['action'] === 'choose') {
+        $next_chapter_id = (int)($_POST['next_chapter_id'] ?? 0);
+        $hero_id = 1; // À récupérer depuis session plus tard
+        
+        // IMPORTANT : mettre à jour Hero_Progress pour lier le héros au chapitre suivant
+        $stmt = $pdo->prepare('UPDATE Hero_Progress SET chapter_id = ? WHERE hero_id = ?');
+        $stmt->execute([$next_chapter_id, $hero_id]);
+        
+        // Rediriger pour éviter re-soumission
+        header('Location: index.php');
+        exit;
+    }
+    if ($_POST['action'] === 'fight') {
+        $chapter_id = (int)($_POST['chapter_id'] ?? 0);
+        $hero_id = 1; // À récupérer depuis session plus tard
 
-$chapterController->show(1);
+        // Rediriger vers la page de combat
+        header('Location: index.php?action=combat&chapter=' . $chapter_id);
+        exit;
+    }
+}
+
+// Afficher le chapitre du héros
+$hero_id = 1; // À récupérer depuis session
+
+// Si demande d'afficher un combat
+if (isset($_GET['action']) && $_GET['action'] === 'combat') {
+    require_once __DIR__ . '/controllers/CombatController.php';
+    $combatController = new CombatController($pdo);
+    $chapterForCombat = isset($_GET['chapter']) ? (int)$_GET['chapter'] : $hero_id;
+    $combatController->show($chapterForCombat);
+    exit;
+}
+
+$chapterController->show($hero_id);
 exit;
 
 /*

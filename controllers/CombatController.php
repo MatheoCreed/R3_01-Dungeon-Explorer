@@ -67,15 +67,22 @@ class CombatController
 
     public function show($id)
     {
+        // $id is expected to be a chapter id. Load chapter and monster for that chapter.
         $chapter = $this->getChapter($id);
-        if ($chapter) {
-            // La vue `chapter_view.php` attend $chapter ; on passe aussi le controller si besoin
-            $chapterController = $this;
-            $chapterId = $id;
-            include __DIR__ . '/../views/chapter_view.php';
-        } else {
+        if (!$chapter) {
             header('HTTP/1.0 404 Not Found');
             echo "Chapitre non trouvé";
+            return;
+        }
+
+        $monster = $this->getMonster($id);
+        if ($monster) {
+            // La vue `combat_view.php` attend $monster et éventuellement $chapter ; on passe aussi le controller si besoin
+            $combatController = $this;
+            include __DIR__ . '/../views/combat_view.php';
+        } else {
+            header('HTTP/1.0 404 Not Found');
+            echo "Combat non trouvé";
         }
     }
 }

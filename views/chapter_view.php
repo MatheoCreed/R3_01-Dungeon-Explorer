@@ -92,10 +92,13 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
                     <?php else: ?>
                         <!-- Choix normaux -->
                         <?php foreach ($chapter->getChoices() as $choice): ?>
-                            <a href="index.php?chapter=<?php echo (int)$choice['chapter']; ?>"
-                            class="block text-center py-3 px-4 rounded-lg bg-gradient-to-b from-[#8b3b0f] to-[#5b1f05] border-[5px] border-[#2b2116] text-white text-[12px] hover:brightness-95 transition">
-                                <?php echo htmlspecialchars($choice['text']); ?>
-                            </a>
+                            <form method="post" action="index.php">
+                                <input type="hidden" name="action" value="choose">
+                                <input type="hidden" name="next_chapter_id" value="<?php echo (int)$choice['chapter']; ?>">
+                                <button type="submit" class="w-full text-center py-3 px-4 rounded-lg bg-gradient-to-b from-[#8b3b0f] to-[#5b1f05] border-[5px] border-[#2b2116] text-white text-[12px] hover:brightness-95 transition">
+                                    <?php echo htmlspecialchars($choice['text']); ?>
+                                </button>
+                            </form>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
