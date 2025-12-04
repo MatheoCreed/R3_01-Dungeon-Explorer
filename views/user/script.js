@@ -1,15 +1,32 @@
-// Use data from PHP if provided via `window.USER_DATA`, otherwise fall back to defaults
-const userData = window.USER_DATA || null;
-let xp = userData ? Number(userData.xp) : 600;
-let xp_max = userData ? Number(userData.xp_max) : 1000;
-let level = userData ? Number(userData.level) : 5;
+document.addEventListener("DOMContentLoaded", () => {
 
-let percent = xp_max > 0 ? (xp / xp_max) * 100 : 0;
+    const userData = window.USER_DATA || {};
+    const xp = Number(userData.xp ?? 0);
+    const xp_max = Number(userData.xp_max ?? 1000);
+    const level = Number(userData.level ?? 1);
 
-const xpFill = document.getElementById("xp-fill");
-const xpText = document.getElementById("xp-text");
-const levelText = document.getElementById("level-text");
+    const percent = xp_max > 0 ? Math.min((xp / xp_max) * 100, 100) : 0;
 
-if (xpFill) xpFill.style.width = percent + "%";
-if (xpText) xpText.innerText = xp + " / " + xp_max + " XP";
-if (levelText) levelText.innerText = "Niveau " + level;
+    const xpFill = document.getElementById("xp-fill");
+    const xpText = document.getElementById("xp-text");
+    const levelText = document.getElementById("level-text");
+
+    function animateXP(target) {
+        let width = 0;
+        const step = target / 60;
+
+        function frame() {
+            width += step;
+            if (width >= target) width = target;
+            xpFill.style.width = width + "%";
+            if (width < target) requestAnimationFrame(frame);
+        }
+
+        requestAnimationFrame(frame);
+    }
+
+    animateXP(percent);
+    xpText.innerText = `${xp} / ${xp_max} XP`;
+    levelText.innerText = "Niveau " + level;
+
+});

@@ -1,54 +1,77 @@
-<?php /** @var array $classes */ ?>
+<?php /** @var ClassModel[] $classes */ ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Dungeon-Explorer - Création Personnage</title>
+    <title>Création de personnage</title>
+
+    <!-- CSS correct -->
     <link rel="stylesheet" href="/R3_01-Dungeon-Explorer/style/style.css">
-    <style>
-        body {
-            background: url("/R3_01-Dungeon-Explorer/sprites/background/ChoixHeros.png") no-repeat center center fixed;
-            background-size: cover;
-        }
+    <style>body {background: url("../sprites/background/ChoixHeros.png") no-repeat center center fixed;
+        background-size: cover;
+                } 
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="creation-wrapper">
+<div class="creation-wrapper">
 
-        <div class="class-list" id="classList">
-        </div>
+    <div class="class-list">
+        <?php foreach ($classes as $class): ?>
+            <button 
+                type="button"
+                class="class-btn"
+                data-id="<?= $class->getId(); ?>"
+                data-sprite="<?= $class->getImage(); ?>"
+                data-hp="<?= $class->getBasePv(); ?>"
+                data-atk="<?= $class->getBaseMana(); ?>"
+                data-def="<?= $class->getStrength(); ?>"
+                data-def="<?= $class->getInitiative(); ?>"
+                data-def="<?= $class->getMaxItems(); ?>"
 
-        <div class="stats">
-            <h2 id="className">Sélectionne une classe</h2>
-            <p id="classDesc"></p>
-
-            <div class="stat"><span>PV :</span> <div class="bar"><div id="pvBar"></div></div> <span id="pvVal"></span></div>
-            <div class="stat"><span>Mana :</span> <div class="bar"><div id="manaBar"></div></div> <span id="manaVal"></span></div>
-            <div class="stat"><span>Force :</span> <div class="bar"><div id="strBar"></div></div> <span id="strVal"></span></div>
-            <div class="stat"><span>Initiative :</span> <div class="bar"><div id="iniBar"></div></div> <span id="iniVal"></span></div>
-
-            <div class="stat"><span>Objets :</span> <span id="maxVal"></span></div>
-        </div>
-
-        <div class="image">
-            <img id="classImg" src="" alt="">
-        </div>
-        
+            >
+                <?= htmlspecialchars($class->getName()); ?>
+            </button>
+        <?php endforeach; ?>
     </div>
+
+    <div class="image">
+        <img id="heroSprite" src="" alt="">
+    </div>
+
+    <div class="stats">
+        <h2>Statistiques</h2>
+
+        <div class="stat">
+            <span>PV</span><div class="bar"><div id="bar-pv"></div></div>
+        </div>
+
+        <div class="stat">
+            <span>Mana</span><div class="bar"><div id="bar-mana"></div></div>
+        </div>
+
+        <div class="stat">
+            <span>strength</span><div class="bar"><div id="bar-strength"></div></div>
+        </div>
+
+    </div>
+</div>
+
+<form action="/R3_01-Dungeon-Explorer/hero/insert" method="POST">
     <div class="name-container">
-    <input type="text" id="heroName" placeholder="Nom du héros">
-</div>
-    <div class="create-container">
-        <button id="createBtn" class="create-btn" disabled>Créer personnage</button>
+        <input type="text" name="name" id="heroName" placeholder="Nom du héros" required>
     </div>
-</div>
 
-<script>
-    const classes = <?= json_encode($classes, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) ?> || [];
-</script>
+    <input type="hidden" name="class_id" id="selectedClass">
+
+    <div class="create-container">
+        <button type="submit" class="create-btn">Créer mon personnage</button>
+    </div>
+</form>
+
+<!-- Script externe -->
 <script src="/R3_01-Dungeon-Explorer/script/script.js"></script>
+
 </body>
 </html>
-

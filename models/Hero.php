@@ -21,6 +21,7 @@ class Hero
     protected $spellList; // array of spells or JSON string
     protected $xp;
     protected $currentLevel;
+    private int $userId;
 
     protected $inventory = []; // simple in-memory inventory: item_id => quantity
 
@@ -46,6 +47,10 @@ class Hero
         $this->xp = (int)$xp;
         $this->currentLevel = (int)$currentLevel;
     }
+
+
+public function getUserId(): int { return $this->userId; }
+public function setUserId(int $id) { $this->userId = $id; }
 
     public function getId()
     {
@@ -100,6 +105,10 @@ class Hero
     public function getLevel()
     {
         return $this->currentLevel;
+    }
+    public function getClassId()
+    {
+        return $this->classId;
     }
 
     // Setters used by GameClass::applyTo()
