@@ -141,7 +141,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body class="min-h-screen bg-cover bg-center bg-no-repeat" style="background-image: url('/R3_01-Dungeon-Explorer/sprites/background/compte.png');">
     <div class="max-w-2xl mx-auto my-10 px-4">
-
         <?php if (!empty($errors)): ?>
             <div class="mb-4">
                 <div class="border-4 border-[#2b2116] bg-[#fff8e0] p-3 rounded-lg shadow-lg">
@@ -163,7 +162,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="max-w-md mx-auto bg-gradient-to-b from-[#f4e7c8] via-[#e6cf97] to-[#ddbf74] border-8 border-[#2b2116] p-5 rounded-lg shadow-lg">
             <h2 class="text-[#2b2116] text-sm font-medium">Gestion du compte</h2>
             <p class="text-[#6b5341] text-xs mb-3">Connecté en tant que <?= htmlspecialchars($currentUser['username']) ?></p>
-
+            <div class="flex items-center justify-between mb-4">
+                <a href="page-user" class="text-white text-sm px-4 py-2 bg-gradient-to-b from-[#8b3b0f] to-[#5b1f05] border-[5px] border-[#2b2116] shadow-[0_6px_0_#1b150f] hover:brightness-95 rounded-lg inline-block">Retourner à l'acceuil</a>
+            </div>
             <form method="post" action="" class="mb-6">
                 <input type="hidden" name="csrf" value="<?= htmlspecialchars($token) ?>">
                 <input type="hidden" name="action" value="update_profile">
@@ -220,9 +221,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <button type="submit" class="text-white text-sm px-4 py-2 bg-gradient-to-b from-[#a11] to-[#700] border-[5px] border-[#2b2116] shadow-[0_6px_0_#1b150f] hover:brightness-95 rounded-lg">Supprimer mon compte</button>
                     <a href="index" class="text-yellow-900 ml-11 text-xs underline">Annuler</a>
                 </div>
-                <div></div>
             </form>
-
+            <div class="flex items-center justify-between mt-4">
+                <a href="connexion" class="text-white text-sm px-4 py-2 bg-gradient-to-b from-[#8b3b0f] to-[#5b1f05] border-[5px] border-[#2b2116] shadow-[0_6px_0_#1b150f] hover:brightness-95 rounded-lg inline-block">Se déconnecter</a>
+            </div>
+            
         </div>
 
     </div>
