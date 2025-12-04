@@ -70,7 +70,7 @@ if ($currentIndex !== null) {
 
 
         <button class="btn">Supprimer Sauvegarde</button>
-        <button class="btn">Se déconnecter</button>
+        <button class="btn"><a href="connexion">Se déconnecter</a></button>
             
         <?php if ($isAdmin): ?>
             <button class="btn" onclick="location.href='/R3_01-Dungeon-Explorer/admin'">
