@@ -46,6 +46,15 @@ CREATE TABLE Monster_Loot (
     UNIQUE (monster_id, item_id) -- Un seul type d'objet par monstre dans cette table
 );
 
+-- Création de la table Spell (Spells disponibles dans le jeu)
+CREATE TABLE Spell (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    spell_name VARCHAR(100) NOT NULL,
+    mana_cost INT NOT NULL,
+    damage INT,
+    description TEXT
+);
+
 -- Création de la table Hero (Personnage principal)
 -- Les équipements (armor, primary_weapon, etc.) font référence à des Items.
 CREATE TABLE Hero (
@@ -64,7 +73,6 @@ CREATE TABLE Hero (
     secondary_weapon_item_id INT,
     shield_item_id INT,
     
-    spell_list TEXT,
     xp INT NOT NULL,
     current_level INT DEFAULT 1,
     
@@ -73,6 +81,16 @@ CREATE TABLE Hero (
     FOREIGN KEY (primary_weapon_item_id) REFERENCES Items(id),
     FOREIGN KEY (secondary_weapon_item_id) REFERENCES Items(id),
     FOREIGN KEY (shield_item_id) REFERENCES Items(id)
+);
+
+-- Table intermédiaire pour les spells des héros (Hero - Spell)
+CREATE TABLE Hero_Spell (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hero_id INT NOT NULL,
+    spell_id INT NOT NULL,
+    FOREIGN KEY (hero_id) REFERENCES Hero(id),
+    FOREIGN KEY (spell_id) REFERENCES Spell(id),
+    UNIQUE (hero_id, spell_id) -- Un héros ne peut apprendre un spell qu'une fois
 );
 
 -- Création de la table Level (Niveaux de progression des classes)

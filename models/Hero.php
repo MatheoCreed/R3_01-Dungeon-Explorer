@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/Spell.php';
+
 class Hero
 {
     protected $id;
@@ -18,13 +20,14 @@ class Hero
     protected $secondaryWeaponItemId;
     protected $shieldItemId;
 
-    protected $spellList; // array of spells or JSON string
+    // spellList holds an array of Spell objects (or numeric IDs until loaded)
+    protected $spellList = [];
     protected $xp;
     protected $currentLevel;
 
     protected $inventory = []; // simple in-memory inventory: item_id => quantity
 
-    public function __construct($name, $classId = null, $image = null, $biography = '', $pv = 0, $mana = 0, $strength = 0, $initiative = 0, $armorItemId = null, $primaryWeaponItemId = null, $secondaryWeaponItemId = null, $shieldItemId = null, $spellList = [], $xp = 0, $currentLevel = 1, $id = null)
+    public function __construct($name, $classId = null, $image = null, $biography = '', $pv = 0, $mana = 0, $strength = 0, $initiative = 0, $armorItemId = null, $primaryWeaponItemId = null, $secondaryWeaponItemId = null, $shieldItemId = null, $xp = 0, $currentLevel = 1, $id = null)
     {
         $this->id = $id;
         $this->name = $name;
@@ -42,7 +45,6 @@ class Hero
         $this->secondaryWeaponItemId = $secondaryWeaponItemId;
         $this->shieldItemId = $shieldItemId;
 
-        $this->spellList = is_array($spellList) ? $spellList : (json_decode($spellList, true) ?: []);
         $this->xp = (int)$xp;
         $this->currentLevel = (int)$currentLevel;
     }
@@ -222,6 +224,32 @@ class Hero
     public function getInventory()
     {
         return $this->inventory;
+    }
+
+    public function addToSpell($spellId)
+    {
+        $qid = (string)$spellId;
+        $this->spellList[$qid] = 1;
+        
+    }
+
+    public function removeFromSpell($spellId)
+    {
+        $qid = (string)$spellId;
+        if (!isset($this->spellList[$qid])) {
+            return false;
+        }
+        $this->spellList[$qid] = 0;
+        return true;
+    }
+
+    public function getSpells()
+    {
+        return $this->spellList;
+    }
+
+    public function getSpell($id) {
+        return $this->spellList[$id];
     }
 
     public function toArray()
