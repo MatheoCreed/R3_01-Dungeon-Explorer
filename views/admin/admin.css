@@ -1,0 +1,257 @@
+/* =========================== */
+/*       ADMIN DASHBOARD       */
+/* =========================== */
+
+body {
+    margin: 0;
+    padding: 0;
+    background: url("/R3_01-Dungeon-Explorer/sprites/background/pagePrincipale.png") no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    color: #ffe9a3;
+}
+
+/* CONTAINER PRINCIPAL */
+.admin-container {
+    margin: 50px auto;
+    width: 80%;
+    background: rgba(0,0,0,0.55);
+    padding: 30px;
+    border: 4px solid #8f6a1b;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.7),
+                inset 0 0 25px rgba(255,225,150,0.3);
+}
+
+/* TITRE */
+.admin-title {
+    text-align: center;
+    font-family: "Cinzel", serif;
+    font-size: 42px;
+    margin-bottom: 20px;
+    color: #ffe9a3;
+    text-shadow: 0 0 12px black;
+}
+
+.admin-table {
+    width: 90%;
+    border-collapse: collapse;
+    margin: 20px auto;  
+}
+.admin-table th,
+.admin-table td {
+    padding: 12px;
+    border: 2px solid #8f6a1b;
+    background: rgba(0,0,0,0.4);
+    color: #ffe9a3;
+}
+
+.admin-table th {
+    background: rgba(140,110,40,0.5);
+    font-family: "Cinzel", serif;
+    font-size: 20px;
+}
+
+/* FORMULAIRE ADMIN */
+.admin-form {
+    width: 100%;
+    max-width: 600px;
+    margin: 30px auto;
+    background: rgba(0,0,0,0.55);
+    padding: 25px;
+    border-radius: 15px;
+    border: 3px solid #8f6a1b;
+    box-shadow:
+        inset 0 0 20px rgba(0,0,0,0.6),
+        0 0 15px rgba(0,0,0,0.7);
+}
+
+.admin-label{
+    font-family: "Cinzel", serif;
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #ffe9a3;
+    margin-left: 60px;
+}
+
+.admin-form label {
+    display: block;
+    font-family: "Cinzel", serif;
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+
+.admin-form input,
+.admin-form textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 3px solid #8f6a1b;
+    background: rgba(255,245,200,0.8);
+    margin-bottom: 15px;
+}
+
+.admin-form textarea {
+    height: 150px;
+    resize: none;
+}
+
+/* BOUTON CONFIRMER */
+.admin-submit {
+    width: 100%;
+    padding: 10px;
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+
+
+/* bouton */
+.admin-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    margin-bottom: 20px;
+    margin-left: 30px;
+
+    background: linear-gradient(145deg, #c9a43a, #f4d67a, #b58b2a);
+    border: 3px solid #8f6a1b;
+    border-radius: 12px;
+
+    box-shadow:
+        inset 0 0 10px rgba(255, 225, 150, 0.8),
+        0 0 12px rgba(0, 0, 0, 0.4);
+
+    font-family: "Cinzel", serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: #3b2200;
+    text-decoration: none;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.admin-btn:hover {
+    background: linear-gradient(145deg, #ffeb99, #f7d87c, #d1aa3c);
+    border-color: #b78925;
+    box-shadow:
+        inset 0 0 15px rgba(255,240,190,1),
+        0 0 20px rgba(255,200,80,0.9);
+    transform: scale(1.05);
+}
+
+
+
+/* Grille de chapitres */
+.chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 30px 50px;
+}
+
+/* Carte de chapitre */
+.chapter-card {
+    background: rgba(0, 0, 0, 0.5);
+    border: 3px solid #8f6a1b;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    color: #ffe9a3;
+    text-decoration: none;
+
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.chapter-card:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #c9a43a;
+}
+
+.chapter-card input[type="radio"] {
+    display: none;
+}
+
+.chapter-card input[type="radio"]:checked + h3 {
+    color: #ffd24a;
+}
+.admin-textarea {
+    width: 90%;
+    max-width: 900px;
+    height: 140px;
+
+    padding: 12px;
+    margin: 15px auto;
+    display: block;
+
+    font-family: "Cinzel", serif;
+    font-size: 16px;
+    color: #3b2200;
+    letter-spacing: 0.5px;
+
+    background: #fff7e1;
+    border: 3px solid #8f6a1b;
+    border-radius: 12px;
+
+    box-shadow:
+        inset 0 0 10px rgba(255, 225, 150, 0.6),
+        0 0 10px rgba(0, 0, 0, 0.3);
+
+    resize: vertical;
+    outline: none;
+    transition: 0.2s;
+}
+
+.admin-textarea:focus {
+    box-shadow:
+        inset 0 0 12px rgba(255, 240, 200, 1),
+        0 0 14px rgba(200, 150, 50, 0.8);
+    border-color: #b58b2a;
+}
+.retour-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    margin-bottom: 20px;
+    margin-left: 30px;
+    margin-top: 40px;
+
+    background: linear-gradient(145deg, #c9a43a, #f4d67a, #b58b2a);
+    border: 3px solid #8f6a1b;
+    border-radius: 12px;
+
+    box-shadow:
+        inset 0 0 10px rgba(255, 225, 150, 0.8),
+        0 0 12px rgba(0, 0, 0, 0.4);
+
+    font-family: "Cinzel", serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: #3b2200;
+    text-decoration: none;
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.retour-btn:hover {
+    background: linear-gradient(145deg, #ffeb99, #f7d87c, #d1aa3c);
+    border-color: #b78925;
+    box-shadow:
+        inset 0 0 15px rgba(255,240,190,1),
+        0 0 20px rgba(255,200,80,0.9);
+    transform: scale(1.05);
+}
+
+.delete-btn {
+    color: #ff4b4b;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.delete-btn:hover {
+    color: red;
+}

@@ -1,6 +1,5 @@
 <?php
 global $db;
-session_start();
 // session_abort();
 require_once __DIR__ . '/../Database.php';
 

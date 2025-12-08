@@ -230,11 +230,10 @@ CREATE TABLE Inventory (
 
 -- 17. Progression du Héros (Dépend de Hero et Chapter)
 CREATE TABLE Hero_Progress (
-    id INT AUTO_INCREMENT PRIMARY KEY,
     hero_id INT,
     chapter_id INT,
-    status VARCHAR(20) DEFAULT 'Completed',
-    completion_date DATETIME,
+    PRIMARY KEY (hero_id, chapter_id),
+
     FOREIGN KEY (hero_id) REFERENCES Hero(id) ON DELETE CASCADE,
     FOREIGN KEY (chapter_id) REFERENCES Chapter(id)
 ) ENGINE=InnoDB;

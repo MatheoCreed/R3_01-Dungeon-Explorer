@@ -3,12 +3,14 @@ require_once __DIR__ . '/../Database.php';
 require_once __DIR__ . '/../models/Item.php';
 
 
-class PageUserController {
+class PageUserController
+{
 
     private $pdo;
     private $itemModel;
-    
-    public function __construct() {
+
+    public function __construct()
+    {
         global $db;
         $this->pdo = $db;
 
@@ -18,7 +20,8 @@ class PageUserController {
         $this->itemModel = new ItemModel($this->pdo);
     }
 
-    public function index() {
+    public function index()
+    {
 
         // Vérifier si l'utilisateur est connecté
         if (!isset($_SESSION['user_id'])) {
@@ -40,25 +43,34 @@ class PageUserController {
             die("Utilisateur introuvable.");
         }
 
-          // Charger TOUS les héros de l'utilisateur (order by id asc)
+        // Charger TOUS les héros de l'utilisateur (order by id asc)
         $stmt = $this->pdo->prepare("SELECT * FROM Hero WHERE user_id = ? ORDER BY id ASC");
         $stmt->execute([$userId]);
         $heroes = $stmt->fetchAll(PDO::FETCH_ASSOC); // peut être []
         // Déterminer le héros sélectionné : ?hero=ID sinon premier (ou null si aucun)
+        // Déterminer le héros sélectionné
         $selectedHero = null;
+
         if (isset($_GET['hero']) && $_GET['hero'] !== '') {
             $candidateId = (int) $_GET['hero'];
             foreach ($heroes as $h) {
-                if ((int)$h['id'] === $candidateId) {
+                if ((int) $h['id'] === $candidateId) {
                     $selectedHero = $h;
                     break;
                 }
             }
         }
+
         if ($selectedHero === null && !empty($heroes)) {
-            // si tu veux le dernier créé à la place du premier, utilise end($heroes)
             $selectedHero = end($heroes);
         }
+
+        /* 👇 AJOUT ICI : on stocke l'ID du héros sélectionné dans la session */
+        if ($selectedHero) {
+            $_SESSION['hero_id'] = (int) $selectedHero['id'];
+
+        }
+
         // Récupérer l'équipement (items équipés) et l'inventaire pour le héros sélectionné
         $equipment = [
             'armor' => null,
@@ -75,16 +87,21 @@ class PageUserController {
             $secondaryId = $selectedHero['secondary_weapon_item_id'] ?? null;
             $shieldId = $selectedHero['shield_item_id'] ?? null;
 
-            $ids = array_filter([$armorId, $primaryId, $secondaryId, $shieldId], function($v) { return !is_null($v) && $v !== ''; });
+            $ids = array_filter([$armorId, $primaryId, $secondaryId, $shieldId], function ($v) {
+                return !is_null($v) && $v !== ''; });
             $items = $this->itemModel->getByIds($ids);
 
-            if ($armorId && isset($items[$armorId])) $equipment['armor'] = $items[$armorId];
-            if ($primaryId && isset($items[$primaryId])) $equipment['primary_weapon'] = $items[$primaryId];
-            if ($secondaryId && isset($items[$secondaryId])) $equipment['secondary_weapon'] = $items[$secondaryId];
-            if ($shieldId && isset($items[$shieldId])) $equipment['shield'] = $items[$shieldId];
+            if ($armorId && isset($items[$armorId]))
+                $equipment['armor'] = $items[$armorId];
+            if ($primaryId && isset($items[$primaryId]))
+                $equipment['primary_weapon'] = $items[$primaryId];
+            if ($secondaryId && isset($items[$secondaryId]))
+                $equipment['secondary_weapon'] = $items[$secondaryId];
+            if ($shieldId && isset($items[$shieldId]))
+                $equipment['shield'] = $items[$shieldId];
 
             // inventaire complet (table Inventory join Items)
-            $inventory = $this->itemModel->getInventoryForHero((int)$selectedHero['id']); // tableau de rows item + quantity
+            $inventory = $this->itemModel->getInventoryForHero((int) $selectedHero['id']); // tableau de rows item + quantity
         }
 
         // Passer tout à la vue
@@ -95,7 +112,7 @@ class PageUserController {
         require __DIR__ . '/../views/user/page-user.php';
     }
 }
-        
-        
+
+
 
 

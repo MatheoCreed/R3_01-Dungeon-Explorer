@@ -3,8 +3,8 @@
 // $user vient de show()
 
 $displayName = htmlspecialchars($user['username'] ?? 'Invité');
-$level = (int)($hero['current_level'] ?? 1);
-$xp = (int)($hero['xp'] ?? 0);
+$level = (int) ($hero['current_level'] ?? 1);
+$xp = (int) ($hero['xp'] ?? 0);
 $xp_max = 1000;
 $heroName = $hero['name'] ?? 'Aucun héros';
 
@@ -14,7 +14,10 @@ $heroesList = $heroes ?? [];
 $currentIndex = null;
 if (!empty($heroesList) && $hero) {
     foreach ($heroesList as $k => $h) {
-        if ((int)$h['id'] === (int)$hero['id']) { $currentIndex = $k; break; }
+        if ((int) $h['id'] === (int) $hero['id']) {
+            $currentIndex = $k;
+            break;
+        }
     }
 }
 $prevId = $nextId = null;
@@ -28,31 +31,33 @@ if ($currentIndex !== null) {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/R3_01-Dungeon-Explorer/views/user/style.css">
     <title>Page Héros</title>
 </head>
+
 <body>
 
     <!-- Sélecteur héros -->
     <?php if (!empty($heroesList)): ?>
         <div class="hero-selector">
             <?php if ($prevId !== null): ?><a class="">
-                <a class="arrow prev" href="/R3_01-Dungeon-Explorer/pageUser?hero=<?= (int)$prevId ?>">⬅ Précédent</a>
-            <?php endif; ?>
+                    <a class="arrow prev" href="/R3_01-Dungeon-Explorer/pageUser?hero=<?= (int) $prevId ?>">⬅ Précédent</a>
+                <?php endif; ?>
 
-            <?php if (!empty($hero)): ?>
-                <div >
-                    <img src="<?= htmlspecialchars($hero['image'] ?? '') ?>" alt="Héros" class="guerrier-image">
-                </div>
-            <?php else: ?>
-                <div>Aucun héros</div>
-            <?php endif; ?>
+                <?php if (!empty($hero)): ?>
+                    <div>
+                        <img src="<?= htmlspecialchars($hero['image'] ?? '') ?>" alt="Héros" class="guerrier-image">
+                    </div>
+                <?php else: ?>
+                    <div>Aucun héros</div>
+                <?php endif; ?>
 
-            <?php if ($nextId !== null): ?>
-                <a class="arrow next" href="/R3_01-Dungeon-Explorer/pageUser?hero=<?= (int)$nextId ?>">Suivant ➡</a>
-            <?php endif; ?>
+                <?php if ($nextId !== null): ?>
+                    <a class="arrow next" href="/R3_01-Dungeon-Explorer/pageUser?hero=<?= (int) $nextId ?>">Suivant ➡</a>
+                <?php endif; ?>
         </div>
     <?php endif; ?>
 
@@ -63,7 +68,10 @@ if ($currentIndex !== null) {
     </div>
 
     <div class="buttons-container">
-        <button class="btn">Continuer</button>
+        <button class="btn" onclick="location.href='chapter/show'">
+            Continuer
+        </button>
+
         <button class="btn" onclick="location.href='/R3_01-Dungeon-Explorer/hero/create'">
             Nouvelle partie
         </button>
@@ -71,9 +79,9 @@ if ($currentIndex !== null) {
 
         <button class="btn">Supprimer Sauvegarde</button>
         <button class="btn"><a href="connexion">Se déconnecter</a></button>
-            
+
         <?php if ($isAdmin): ?>
-            <button class="btn" onclick="location.href='/R3_01-Dungeon-Explorer/admin'">
+            <button class="btn" onclick="location.href='admin'">
                 Accès admin
             </button>
         <?php endif; ?>
@@ -87,17 +95,17 @@ if ($currentIndex !== null) {
         <p id="xp-text"><?= $xp ?> / <?= $xp_max ?> XP</p>
     </div>
 
-<!-- Panneau central : stats / équipement / inventaire -->
+    <!-- Panneau central : stats / équipement / inventaire -->
     <div class="center-panel">
         <!-- STATS -->
         <div class="stats-card">
             <h3>Statistiques</h3>
             <p><strong>Niveau :</strong> <?= $level ?></p>
             <p><strong>XP :</strong> <?= $xp ?> / <?= $xp_max ?></p>
-            <p><strong>PV :</strong> <?= (int)($hero['pv'] ?? 0) ?></p>
-            <p><strong>Mana :</strong> <?= (int)($hero['mana'] ?? 0) ?></p>
-            <p><strong>Force :</strong> <?= (int)($hero['strength'] ?? 0) ?></p>
-            <p><strong>Initiative :</strong> <?= (int)($hero['initiative'] ?? 0) ?></p>
+            <p><strong>PV :</strong> <?= (int) ($hero['pv'] ?? 0) ?></p>
+            <p><strong>Mana :</strong> <?= (int) ($hero['mana'] ?? 0) ?></p>
+            <p><strong>Force :</strong> <?= (int) ($hero['strength'] ?? 0) ?></p>
+            <p><strong>Initiative :</strong> <?= (int) ($hero['initiative'] ?? 0) ?></p>
         </div>
 
         <!-- EQUIPEMENT -->
@@ -116,7 +124,7 @@ if ($currentIndex !== null) {
             </div>
 
             <div class="equip-slot">
-                <div ><strong>Arme principale</strong></div>
+                <div><strong>Arme principale</strong></div>
                 <?php if (!empty($equipment['primary_weapon'])): ?>
                     <?php $it = $equipment['primary_weapon']; ?>
                     <img src="<?= htmlspecialchars($it['image'] ?? '') ?>" alt="<?= htmlspecialchars($it['name']) ?>">
@@ -161,11 +169,12 @@ if ($currentIndex !== null) {
                         <div class="inventory-item">
                             <div>
                                 <?php if (!empty($inv['image'])): ?>
-                                    <img src="<?= htmlspecialchars($inv['image']) ?>" alt="<?= htmlspecialchars($inv['name']) ?>" style="width:36px;height:36px;object-fit:cover;border-radius:4px;">
+                                    <img src="<?= htmlspecialchars($inv['image']) ?>" alt="<?= htmlspecialchars($inv['name']) ?>"
+                                        style="width:36px;height:36px;object-fit:cover;border-radius:4px;">
                                 <?php endif; ?>
                                 <div><?= htmlspecialchars($inv['name']) ?></div>
                             </div>
-                            <div><?= (int)$inv['quantity'] ?></div>
+                            <div><?= (int) $inv['quantity'] ?></div>
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -174,17 +183,16 @@ if ($currentIndex !== null) {
     </div>
 
 
-<script>
-window.USER_DATA = {
-    xp: <?= (int)$xp ?>,
-    xp_max: <?= (int)$xp_max ?>,
-    level: <?= (int)$level ?>
-};
-</script>
+    <script>
+        window.USER_DATA = {
+            xp: <?= (int) $xp ?>,
+            xp_max: <?= (int) $xp_max ?>,
+            level: <?= (int) $level ?>
+        };
+    </script>
 
 
-<script src="/R3_01-Dungeon-Explorer/views/user/script.js"></script>
+    <script src="/R3_01-Dungeon-Explorer/views/user/script.js"></script>
 </body>
+
 </html>
-
-

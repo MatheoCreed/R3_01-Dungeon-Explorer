@@ -1,4 +1,3 @@
-<?php /** @var ClassModel[] $classes */ ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -15,8 +14,10 @@
 
 <body>
 
-<div class="creation-wrapper">
 
+
+<div class="creation-wrapper">
+    <a href="../page-user" class="retour-btn">Retour</a>
     <div class="class-list">
         <?php foreach ($classes as $class): ?>
             <button 

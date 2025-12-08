@@ -124,6 +124,13 @@ $userId = $_SESSION['user_id'];
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
+     $stmt2 = $this->pdo->prepare("
+        INSERT INTO hero_progress
+            (hero_id, chapter_id)
+        VALUES (?, ?)
+    ");
+
+
     $stmt->execute([
         $hero->getName(),
         $hero->getPv(),
@@ -135,6 +142,11 @@ $userId = $_SESSION['user_id'];
         $hero->getLevel(),
         $userId,
         $hero->getImage()         // ← image enregistrée
+    ]);
+
+    $stmt2->execute([
+        $this->pdo->lastInsertId(),
+        1 // Commencer au chapitre 1
     ]);
 
     return $this->pdo->lastInsertId();
