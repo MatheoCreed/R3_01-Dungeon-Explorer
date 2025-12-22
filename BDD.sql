@@ -15,7 +15,8 @@ CREATE TABLE Items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     description TEXT,
-    item_type VARCHAR(50) NOT NULL -- Ex: 'Arme', 'Armure', 'Potion', etc.
+    item_type VARCHAR(50) NOT NULL, -- Ex: 'Arme', 'Armure', 'Potion', etc.
+    value INT -- c'est le bonus des équipements, à NULL si autre type d'item
 );
 
 

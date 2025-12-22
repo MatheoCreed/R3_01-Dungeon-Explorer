@@ -7,6 +7,7 @@ class Hero
     protected $id;
     protected $name;
     protected $classId;
+    protected $className;
     protected $image;
     protected $biography;
 
@@ -226,11 +227,17 @@ class Hero
         return $this->inventory;
     }
 
-    public function addToSpell($spellId)
+    public function addToSpell($spell)
     {
-        $qid = (string)$spellId;
-        $this->spellList[$qid] = 1;
-        
+        // Accepte un objet Spell ou un identifiant
+        if ($spell instanceof Spell) {
+            $qid = (string)$spell->getId();
+            $this->spellList[$qid] = $spell;
+        } else {
+            $qid = (string)$spell;
+            // stocke l'id pour compatibilité (mais préférer charger les objets via le contrôleur)
+            $this->spellList[$qid] = $qid;
+        }
     }
 
     public function removeFromSpell($spellId)
@@ -239,7 +246,7 @@ class Hero
         if (!isset($this->spellList[$qid])) {
             return false;
         }
-        $this->spellList[$qid] = 0;
+        unset($this->spellList[$qid]);
         return true;
     }
 
@@ -249,7 +256,73 @@ class Hero
     }
 
     public function getSpell($id) {
-        return $this->spellList[$id];
+        $qid = (string)$id;
+        if (!isset($this->spellList[$qid])) return null;
+        $val = $this->spellList[$qid];
+        // Si c'est un objet Spell, retourne l'objet
+        if ($val instanceof Spell) return $val;
+        // sinon, on pourrait charger l'objet depuis la BDD si nécessaire (non implémenté ici)
+        return null;
+    }
+
+    public function setClassName($name) {
+        $this->className = $name;
+    }
+
+    public function getClassName() {
+        return $this->className;
+    }
+
+    public function getWeaponBonus()
+    {
+        if (empty($this->primaryWeaponItemId)) {
+            return 0;
+        }
+
+        global $db;
+        if (!isset($db) || !$db instanceof PDO) {
+            return 0;
+        }
+
+        try {
+            $stmt = $db->prepare('SELECT value FROM Items WHERE id = ?');
+            $stmt->execute([(int)$this->primaryWeaponItemId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row ? (int)$row['value'] : 0;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function getArmorBonus()
+    {
+        if (empty($this->armorItemId)) {
+            return 0;
+        }
+
+        global $db;
+        if (!isset($db) || !$db instanceof PDO) {
+            return 0;
+        }
+
+        try {
+            $stmt = $db->prepare('SELECT value FROM Items WHERE id = ?');
+            $stmt->execute([(int)$this->armorItemId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row ? (int)$row['value'] : 0;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function isThief()
+    {
+        return $this->className == "Voleur";
+    }
+
+    public function isMage()
+    {
+        return $this->className == "Magicien";
     }
 
     public function toArray()
