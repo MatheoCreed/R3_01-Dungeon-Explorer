@@ -1,11 +1,12 @@
 
 <link rel="stylesheet" href="/R3_01-Dungeon-Explorer/views/admin/admin.css">
 
-<a href="../../admin" class="retour-btn">Retour</a>
 
 <div class="admin-container">
     <h1 class="admin-title">Gestion des liens entre chapitres</h1>
 </div>
+<a href="../../admin" class="retour-btn">Retour</a>
+
 <a href="create1" class="admin-btn">Ajouter un lien</a>
 
 <div class="admin-table-wrapper">

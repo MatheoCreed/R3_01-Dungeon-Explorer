@@ -20,7 +20,7 @@
             <a href="admin/chapter/index" class="admin-btn">Gestion des Chapitres</a>
             <a href="admin/link/index" class="admin-btn">Gestion des Liens entre chapitres</a>
             <a href="admin/user/index" class="admin-btn">Gestion des Utilisateurs</a>
-            <a href="#" class="admin-btn">Gestion des Images</a>
+            <a href="admin/class/index" class="admin-btn">Gestion des Classes</a>
 
         </div>
 

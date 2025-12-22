@@ -76,6 +76,13 @@ $router->addRoute('next', 'ChapterController@nextChapter');
 $router->addRoute('admin/user/index', 'AdminUserController@index');
 $router->addRoute('admin/user/delete', 'AdminUserController@delete');
 
+$router->addRoute("admin/class/index", "AdminClassController@index");
+$router->addRoute("admin/class/create", "AdminClassController@create");
+$router->addRoute("admin/class/store", "AdminClassController@store");
+$router->addRoute("admin/class/edit", "AdminClassController@edit");
+$router->addRoute("admin/class/update", "AdminClassController@update");
+$router->addRoute("admin/class/delete", "AdminClassController@delete");
+
 
 
 

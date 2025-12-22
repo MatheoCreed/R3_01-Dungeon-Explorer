@@ -105,7 +105,7 @@ if ($currentIndex !== null) {
             <p><strong>PV :</strong> <?= (int) ($hero['pv'] ?? 0) ?></p>
             <p><strong>Mana :</strong> <?= (int) ($hero['mana'] ?? 0) ?></p>
             <p><strong>Force :</strong> <?= (int) ($hero['strength'] ?? 0) ?></p>
-            <p><strong>Initiative :</strong> <?= (int) ($hero['initiative'] ?? 0) ?></p>
+            <p><strong>Initiative :</strong> <?= (int) ($hero['initiative'] ?? 0) ?></p>     
         </div>
 
         <!-- EQUIPEMENT -->

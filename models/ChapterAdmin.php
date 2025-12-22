@@ -24,10 +24,10 @@ class ChapterAdmin
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function create($content, $image)
+    public function create($content, $image,$title)
     {
-        $stmt = $this->pdo->prepare("INSERT INTO Chapter (content, image) VALUES (?, ?)");
-        return $stmt->execute([$content, $image]);
+        $stmt = $this->pdo->prepare("INSERT INTO Chapter (content, image, title) VALUES (?, ?,?)");
+        return $stmt->execute([$content, $image, $title]);
     }
 
     public function update($id, $title, $content, $image)
