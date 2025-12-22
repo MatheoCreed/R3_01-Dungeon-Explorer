@@ -57,12 +57,10 @@ class CombatController
         // 3. Préparation des données pour la vue
         $combatData = $_SESSION['combat'];
         
-        // On recharge les objets "frais" pour l'affichage, mais on applique les PV de la session
-        $hero = $this->getHeroById($heroId); // Méthode helper à créer ou utiliser HeroRepository
+        $hero = $this->getHeroById($heroId); 
         $monster = $this->getMonster($chapterId);
         $chapter = $this->getChapter($chapterId);
 
-        // Charger les sorts du héros dans l'objet (pour l'affichage et le cast)
         $stmt = $this->pdo->prepare('SELECT s.* FROM Hero_Spell hs JOIN Spell s ON hs.spell_id = s.id WHERE hs.hero_id = ?');
         $stmt->execute([$heroId]);
         $spells = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -71,7 +69,6 @@ class CombatController
             $hero->addToSpell($spellObj);
         }
 
-        // Synchronisation visuelle
         $hero->setPv($combatData['hero_pv']);
         $hero->setMana($combatData['hero_mana']);
         
@@ -161,7 +158,7 @@ class CombatController
             $_SESSION['combat']['finished'] = true;
             $_SESSION['combat']['win'] = true;
             $this->addLog("Victoire ! Le monstre est vaincu.");
-            // Attribution d'XP et loot
+            
             $this->giveRewards($hero, $monster, $chapterId);
         }
     }
@@ -181,7 +178,6 @@ class CombatController
             $log = "Vous attaquez physiquement (Att: $attaque vs Def: $defense). Dégâts : $degats.";
 
         } elseif ($action === 'magie') {
-            // backward compatible: un sort générique coût 3 mana
             $coutSort = 3; 
             if ($hero->getMana() >= $coutSort) {
                 $attaqueMagique = rand(1, 6) + rand(1, 6) + $coutSort;
@@ -277,22 +273,39 @@ class CombatController
     {
         // XP
         $xp = (int)$monster->getExperienceValue();
-        $hero->gainXp($xp);
 
-        // Prepare rewards structure for the view/session
+        $oldMaxPv = $_SESSION['combat']['hero_max_pv'] ?? $hero->getPv();
+        $oldMaxMana = $_SESSION['combat']['hero_max_mana'] ?? $hero->getMana();
+        $oldStrength = $hero->getStrength();
+        $oldInitiative = $hero->getInitiative();
+
+        $hero->gainXp($xp);
+        $levelUps = $hero->getLevelUps();
+
         $rewards = [
             'xp' => $xp,
             'items' => []
         ];
 
-        // Persist hero XP/level update and process loot
+        $sumPv = 0; $sumMana = 0; $sumStr = 0; $sumInit = 0;
+        foreach ($levelUps as $lu) {
+            $sumPv += $lu['pv_bonus'];
+            $sumMana += $lu['mana_bonus'];
+            $sumStr += $lu['strength_bonus'];
+            $sumInit += $lu['initiative_bonus'];
+        }
+
+        $newBasePv = $oldMaxPv + $sumPv;
+        $newBaseMana = $oldMaxMana + $sumMana;
+        $newStrength = $oldStrength + $sumStr;
+        $newInitiative = $oldInitiative + $sumInit;
+
         try {
             $this->pdo->beginTransaction();
 
-            $stmt = $this->pdo->prepare('UPDATE Hero SET xp = ?, current_level = ? WHERE id = ?');
-            $stmt->execute([$hero->getXp(), $hero->getLevel(), $hero->getId()]);
+            $stmt = $this->pdo->prepare('UPDATE Hero SET xp = ?, current_level = ?, pv = ?, mana = ?, strength = ?, initiative = ? WHERE id = ?');
+            $stmt->execute([$hero->getXp(), $hero->getLevel(), $newBasePv, $newBaseMana, $newStrength, $newInitiative, $hero->getId()]);
 
-            // Find the monster id via Encounter (we need monster_id to read loot table)
             $stmt = $this->pdo->prepare('SELECT monster_id FROM Encounter WHERE chapter_id = ? LIMIT 1');
             $stmt->execute([(int)$chapterId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -305,12 +318,11 @@ class CombatController
 
                 foreach ($loots as $loot) {
                     $dropRate = (float)$loot['drop_rate'];
-                    $roll = mt_rand(0, 10000) / 10000; // precision to 0.0001
+                    $roll = mt_rand(0, 10000) / 10000; 
                     if ($roll <= $dropRate) {
                         $itemId = (int)$loot['item_id'];
                         $qty = (int)$loot['quantity'];
 
-                        // Upsert into Inventory
                         $stmtInv = $this->pdo->prepare('SELECT quantity FROM Inventory WHERE hero_id = ? AND item_id = ?');
                         $stmtInv->execute([$hero->getId(), $itemId]);
                         $existing = $stmtInv->fetch(PDO::FETCH_ASSOC);
@@ -324,7 +336,6 @@ class CombatController
                             $stmtInsert->execute([$hero->getId(), $itemId, $qty]);
                         }
 
-                        // Update in-memory hero and reward list
                         $hero->addToInventory($itemId, $qty);
                         $rewards['items'][] = ['item_id' => $itemId, 'name' => $loot['name'], 'quantity' => $qty];
                     }
@@ -354,7 +365,18 @@ class CombatController
             return;
         }
 
-        // Add logs and session rewards for the view
+        if ($sumPv > 0 || $sumMana > 0 || $sumStr > 0 || $sumInit > 0) {
+            $_SESSION['combat']['hero_max_pv'] = $newBasePv;
+            $_SESSION['combat']['hero_pv'] += $sumPv; 
+
+            $_SESSION['combat']['hero_max_mana'] = $newBaseMana;
+            $_SESSION['combat']['hero_mana'] += $sumMana;
+
+            foreach ($levelUps as $lu) {
+                $this->addLog("Niveau {$lu['level']} atteint ! (+{$lu['pv_bonus']} PV, +{$lu['mana_bonus']} Mana, +{$lu['strength_bonus']} STR, +{$lu['initiative_bonus']} INIT)");
+            }
+        }
+
         $this->addLog("Vous gagnez $xp XP !");
         if (count($rewards['items']) === 0) {
             $this->addLog("Aucun butin récupéré.");

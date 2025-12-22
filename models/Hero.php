@@ -28,6 +28,9 @@ class Hero
 
     protected $inventory = []; // simple in-memory inventory: item_id => quantity
 
+    // Records of level ups that occurred during the last gainXp() call
+    protected $levelUps = []; // each entry: ['level'=>int,'pv_bonus'=>int,'mana_bonus'=>int,'strength_bonus'=>int,'initiative_bonus'=>int]
+
     public function __construct($name, $classId = null, $image = null, $biography = '', $pv = 0, $mana = 0, $strength = 0, $initiative = 0, $armorItemId = null, $primaryWeaponItemId = null, $secondaryWeaponItemId = null, $shieldItemId = null, $xp = 0, $currentLevel = 1, $id = null)
     {
         $this->id = $id;
@@ -166,18 +169,69 @@ class Hero
 
     protected function xpToNextLevel()
     {
+        // Fallback simple progression if table Level is not available
         return 100 * $this->currentLevel;
     }
 
     protected function checkLevelUp()
     {
-        while ($this->xp >= $this->xpToNextLevel()) {
-            $this->xp -= $this->xpToNextLevel();
-            $this->currentLevel++;
-            $this->pv += 10;
-            $this->mana += 5;
-            $this->strength += 1;
-            $this->initiative += 1;
+        // Use Level table to compute level ups per class_id when possible
+        global $db;
+        if (isset($db) && $db instanceof PDO && $this->classId !== null) {
+            // We expect $this->xp to be cumulative total XP
+            while (true) {
+                $nextLevel = $this->currentLevel + 1;
+                $stmt = $db->prepare('SELECT * FROM `Level` WHERE class_id = ? AND level = ? LIMIT 1');
+                $stmt->execute([$this->classId, $nextLevel]);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (!$row) break;
+
+                if ($this->xp >= (int)$row['required_xp']) {
+                    $this->currentLevel = $nextLevel;
+
+                    $pvBonus = (int)$row['pv_bonus'];
+                    $manaBonus = (int)$row['mana_bonus'];
+                    $strBonus = (int)$row['strength_bonus'];
+                    $initBonus = (int)$row['initiative_bonus'];
+
+                    // Apply bonuses to current stats (current HP/mana are increased by the bonus)
+                    $this->pv += $pvBonus;
+                    $this->mana += $manaBonus;
+                    $this->strength += $strBonus;
+                    $this->initiative += $initBonus;
+
+                    // Record the level-up details for the controller to log/persist
+                    $this->levelUps[] = [
+                        'level' => $this->currentLevel,
+                        'pv_bonus' => $pvBonus,
+                        'mana_bonus' => $manaBonus,
+                        'strength_bonus' => $strBonus,
+                        'initiative_bonus' => $initBonus
+                    ];
+
+                    // Continue in case multiple levels are gained at once
+                } else {
+                    break;
+                }
+            }
+        } else {
+            // Fallback behaviour (legacy): consume XP per level
+            while ($this->xp >= $this->xpToNextLevel()) {
+                $this->xp -= $this->xpToNextLevel();
+                $this->currentLevel++;
+                $this->pv += 10;
+                $this->mana += 5;
+                $this->strength += 1;
+                $this->initiative += 1;
+
+                $this->levelUps[] = [
+                    'level' => $this->currentLevel,
+                    'pv_bonus' => 10,
+                    'mana_bonus' => 5,
+                    'strength_bonus' => 1,
+                    'initiative_bonus' => 1
+                ];
+            }
         }
     }
 
@@ -323,6 +377,13 @@ class Hero
     public function isMage()
     {
         return $this->className == "Magicien";
+    }
+
+    public function getLevelUps()
+    {
+        $lu = $this->levelUps;
+        $this->levelUps = [];
+        return $lu;
     }
 
     public function toArray()

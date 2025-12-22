@@ -137,7 +137,6 @@ $logs = $combatData['logs'];
                     </button>
                 </form>
 
-                <!-- Panel des sorts (caché par défaut) -->
                 <?php if ($hero->isMage()): ?>
                     <div id="spells-panel" class="hidden mt-4 p-4 bg-gray-800 rounded border border-blue-700 text-sm">
                         <div class="mb-2 text-yellow-300">Vos sorts :</div>
