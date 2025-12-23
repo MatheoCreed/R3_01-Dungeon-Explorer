@@ -57,8 +57,9 @@ CREATE TABLE Items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     description TEXT,
-    item_type VARCHAR(50) NOT NULL -- Ex: 'Arme', 'Armure', 'Potion'
-) ENGINE=InnoDB;
+    item_type VARCHAR(50) NOT NULL, -- Ex: 'Arme', 'Armure', 'Potion', etc.
+    value INT -- c'est le bonus des équipements, à NULL si autre type d'item
+);
 
 -- 4. Monstres
 CREATE TABLE Monster (
@@ -81,21 +82,54 @@ CREATE TABLE Chapter (
     image VARCHAR(255)
 ) ENGINE=InnoDB;
 
--- 6. PNJ (Personnages Non-Joueurs de base)
-CREATE TABLE PNJ (
+-- Création de la table Spell (Spells disponibles dans le jeu)
+CREATE TABLE Spell (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    spell_name VARCHAR(100) NOT NULL,
+    mana_cost INT NOT NULL,
+    damage INT,
+    description TEXT
+);
+
+-- Création de la table Hero (Personnage principal)
+-- Les équipements (armor, primary_weapon, etc.) font référence à des Items.
+CREATE TABLE Hero (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description VARCHAR(100),
     image VARCHAR(255),
-    UNIQUE (name)
-) ENGINE=InnoDB;
+    biography TEXT,
+    pv INT NOT NULL,
+    mana INT NOT NULL,
+    strength INT NOT NULL,
+    initiative INT NOT NULL,
+    
+    armor_item_id INT,
+    primary_weapon_item_id INT,
+    secondary_weapon_item_id INT,
+    shield_item_id INT,
+    
+    xp INT NOT NULL,
+    current_level INT DEFAULT 1,
+    
+    FOREIGN KEY (class_id) REFERENCES Class(id),
+    FOREIGN KEY (armor_item_id) REFERENCES Items(id),
+    FOREIGN KEY (primary_weapon_item_id) REFERENCES Items(id),
+    FOREIGN KEY (secondary_weapon_item_id) REFERENCES Items(id),
+    FOREIGN KEY (shield_item_id) REFERENCES Items(id)
+);
 
+-- Table intermédiaire pour les spells des héros (Hero - Spell)
+CREATE TABLE Hero_Spell (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hero_id INT NOT NULL,
+    spell_id INT NOT NULL,
+    FOREIGN KEY (hero_id) REFERENCES Hero(id),
+    FOREIGN KEY (spell_id) REFERENCES Spell(id),
+    UNIQUE (hero_id, spell_id) -- Un héros ne peut apprendre un spell qu'une fois
+);
 
--- ==================================================================
--- 3. CRÉATION DES TABLES DÉPENDANTES (Niveau 1)
--- ==================================================================
-
--- 7. Progression des classes (Dépend de Class)
+-- Création de la table Level (Niveaux de progression des classes)
 CREATE TABLE Level (
     id INT AUTO_INCREMENT PRIMARY KEY,
     class_id INT,

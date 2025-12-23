@@ -1,10 +1,13 @@
 <?php
 
+require_once __DIR__ . '/Spell.php';
+
 class Hero
 {
     protected $id;
     protected $name;
     protected $classId;
+    protected $className;
     protected $image;
     protected $biography;
 
@@ -18,14 +21,18 @@ class Hero
     protected $secondaryWeaponItemId;
     protected $shieldItemId;
 
-    protected $spellList; // array of spells or JSON string
+    // spellList holds an array of Spell objects (or numeric IDs until loaded)
+    protected $spellList = [];
     protected $xp;
     protected $currentLevel;
     private int $userId;
 
     protected $inventory = []; // simple in-memory inventory: item_id => quantity
 
-    public function __construct($name, $classId = null, $image = null, $biography = '', $pv = 0, $mana = 0, $strength = 0, $initiative = 0, $armorItemId = null, $primaryWeaponItemId = null, $secondaryWeaponItemId = null, $shieldItemId = null, $spellList = [], $xp = 0, $currentLevel = 1, $id = null)
+    // Records of level ups that occurred during the last gainXp() call
+    protected $levelUps = []; // each entry: ['level'=>int,'pv_bonus'=>int,'mana_bonus'=>int,'strength_bonus'=>int,'initiative_bonus'=>int]
+
+    public function __construct($name, $classId = null, $image = null, $biography = '', $pv = 0, $mana = 0, $strength = 0, $initiative = 0, $armorItemId = null, $primaryWeaponItemId = null, $secondaryWeaponItemId = null, $shieldItemId = null, $xp = 0, $currentLevel = 1, $id = null)
     {
         $this->id = $id;
         $this->name = $name;
@@ -43,7 +50,6 @@ class Hero
         $this->secondaryWeaponItemId = $secondaryWeaponItemId;
         $this->shieldItemId = $shieldItemId;
 
-        $this->spellList = is_array($spellList) ? $spellList : (json_decode($spellList, true) ?: []);
         $this->xp = (int)$xp;
         $this->currentLevel = (int)$currentLevel;
     }
@@ -172,18 +178,69 @@ public function setUserId(int $id) { $this->userId = $id; }
 
     protected function xpToNextLevel()
     {
+        // Fallback simple progression if table Level is not available
         return 100 * $this->currentLevel;
     }
 
     protected function checkLevelUp()
     {
-        while ($this->xp >= $this->xpToNextLevel()) {
-            $this->xp -= $this->xpToNextLevel();
-            $this->currentLevel++;
-            $this->pv += 10;
-            $this->mana += 5;
-            $this->strength += 1;
-            $this->initiative += 1;
+        // Use Level table to compute level ups per class_id when possible
+        global $db;
+        if (isset($db) && $db instanceof PDO && $this->classId !== null) {
+            // We expect $this->xp to be cumulative total XP
+            while (true) {
+                $nextLevel = $this->currentLevel + 1;
+                $stmt = $db->prepare('SELECT * FROM `Level` WHERE class_id = ? AND level = ? LIMIT 1');
+                $stmt->execute([$this->classId, $nextLevel]);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (!$row) break;
+
+                if ($this->xp >= (int)$row['required_xp']) {
+                    $this->currentLevel = $nextLevel;
+
+                    $pvBonus = (int)$row['pv_bonus'];
+                    $manaBonus = (int)$row['mana_bonus'];
+                    $strBonus = (int)$row['strength_bonus'];
+                    $initBonus = (int)$row['initiative_bonus'];
+
+                    // Apply bonuses to current stats (current HP/mana are increased by the bonus)
+                    $this->pv += $pvBonus;
+                    $this->mana += $manaBonus;
+                    $this->strength += $strBonus;
+                    $this->initiative += $initBonus;
+
+                    // Record the level-up details for the controller to log/persist
+                    $this->levelUps[] = [
+                        'level' => $this->currentLevel,
+                        'pv_bonus' => $pvBonus,
+                        'mana_bonus' => $manaBonus,
+                        'strength_bonus' => $strBonus,
+                        'initiative_bonus' => $initBonus
+                    ];
+
+                    // Continue in case multiple levels are gained at once
+                } else {
+                    break;
+                }
+            }
+        } else {
+            // Fallback behaviour (legacy): consume XP per level
+            while ($this->xp >= $this->xpToNextLevel()) {
+                $this->xp -= $this->xpToNextLevel();
+                $this->currentLevel++;
+                $this->pv += 10;
+                $this->mana += 5;
+                $this->strength += 1;
+                $this->initiative += 1;
+
+                $this->levelUps[] = [
+                    'level' => $this->currentLevel,
+                    'pv_bonus' => 10,
+                    'mana_bonus' => 5,
+                    'strength_bonus' => 1,
+                    'initiative_bonus' => 1
+                ];
+            }
         }
     }
 
@@ -231,6 +288,111 @@ public function setUserId(int $id) { $this->userId = $id; }
     public function getInventory()
     {
         return $this->inventory;
+    }
+
+    public function addToSpell($spell)
+    {
+        // Accepte un objet Spell ou un identifiant
+        if ($spell instanceof Spell) {
+            $qid = (string)$spell->getId();
+            $this->spellList[$qid] = $spell;
+        } else {
+            $qid = (string)$spell;
+            // stocke l'id pour compatibilité (mais préférer charger les objets via le contrôleur)
+            $this->spellList[$qid] = $qid;
+        }
+    }
+
+    public function removeFromSpell($spellId)
+    {
+        $qid = (string)$spellId;
+        if (!isset($this->spellList[$qid])) {
+            return false;
+        }
+        unset($this->spellList[$qid]);
+        return true;
+    }
+
+    public function getSpells()
+    {
+        return $this->spellList;
+    }
+
+    public function getSpell($id) {
+        $qid = (string)$id;
+        if (!isset($this->spellList[$qid])) return null;
+        $val = $this->spellList[$qid];
+        // Si c'est un objet Spell, retourne l'objet
+        if ($val instanceof Spell) return $val;
+        // sinon, on pourrait charger l'objet depuis la BDD si nécessaire (non implémenté ici)
+        return null;
+    }
+
+    public function setClassName($name) {
+        $this->className = $name;
+    }
+
+    public function getClassName() {
+        return $this->className;
+    }
+
+    public function getWeaponBonus()
+    {
+        if (empty($this->primaryWeaponItemId)) {
+            return 0;
+        }
+
+        global $db;
+        if (!isset($db) || !$db instanceof PDO) {
+            return 0;
+        }
+
+        try {
+            $stmt = $db->prepare('SELECT value FROM Items WHERE id = ?');
+            $stmt->execute([(int)$this->primaryWeaponItemId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row ? (int)$row['value'] : 0;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function getArmorBonus()
+    {
+        if (empty($this->armorItemId)) {
+            return 0;
+        }
+
+        global $db;
+        if (!isset($db) || !$db instanceof PDO) {
+            return 0;
+        }
+
+        try {
+            $stmt = $db->prepare('SELECT value FROM Items WHERE id = ?');
+            $stmt->execute([(int)$this->armorItemId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row ? (int)$row['value'] : 0;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
+    public function isThief()
+    {
+        return $this->className == "Voleur";
+    }
+
+    public function isMage()
+    {
+        return $this->className == "Magicien";
+    }
+
+    public function getLevelUps()
+    {
+        $lu = $this->levelUps;
+        $this->levelUps = [];
+        return $lu;
     }
 
     public function toArray()
