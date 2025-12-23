@@ -154,6 +154,30 @@ class CombatController
             $_SESSION['combat']['finished'] = true;
             $_SESSION['combat']['win'] = false;
             $this->addLog("Vous êtes mort...");
+
+            // Respawn: renvoyer le joueur au chapitre 10 et mettre à jour sa progression
+            $respawnChapter = 10;
+            try {
+                $stmtProg = $this->pdo->prepare('SELECT chapter_id FROM Hero_Progress WHERE hero_id = ? LIMIT 1');
+                $stmtProg->execute([$hero->getId()]);
+                $exists = $stmtProg->fetch(PDO::FETCH_ASSOC);
+
+                if ($exists) {
+                    $stmtUpdateProg = $this->pdo->prepare('UPDATE Hero_Progress SET chapter_id = ? WHERE hero_id = ?');
+                    $stmtUpdateProg->execute([$respawnChapter, $hero->getId()]);
+                } else {
+                    $stmtInsertProg = $this->pdo->prepare('INSERT INTO Hero_Progress (hero_id, chapter_id) VALUES (?, ?)');
+                    $stmtInsertProg->execute([$hero->getId(), $respawnChapter]);
+                }
+            } catch (Exception $e) {
+                $this->addLog('Erreur lors de la mise à jour de la progression : ' . $e->getMessage());
+            }
+
+            // Supprimer le combat courant et rediriger vers le chapitre de respawn
+            unset($_SESSION['combat']);
+            header('Location: index.php?action=continue&chapter=' . $respawnChapter);
+            exit;
+
         } elseif ($_SESSION['combat']['monster_pv'] <= 0) {
             $_SESSION['combat']['finished'] = true;
             $_SESSION['combat']['win'] = true;
@@ -170,7 +194,7 @@ class CombatController
         if ($action === 'physique') {
             $attaque = rand(1, 6) + $hero->getStrength() + $hero->getWeaponBonus();
             
-            $defense = rand(1, 6) + (int)($monster->getStrength() / 2); // Pas d'armure pour le monstre dans la BDD
+            $defense = rand(1, 6) + (int)($monster->getStrength() / 2);
             
             $degats = max(0, $attaque - $defense);
             
