@@ -77,7 +77,13 @@ $router->addRoute("admin/class/edit", "AdminClassController@edit");
 $router->addRoute("admin/class/update", "AdminClassController@update");
 $router->addRoute("admin/class/delete", "AdminClassController@delete");
 
-/* ✅ NOUVELLES ROUTES COMBAT */
+$router->addRoute('equipment', 'EquipmentController@index');
+$router->addRoute('equipment/equip', 'EquipmentController@equip');
+$router->addRoute('equipment/unequip', 'EquipmentController@unequip');
+
+$router->addRoute('merchant', 'MerchantController@show');
+$router->addRoute('merchant/buy', 'MerchantController@buy');
+
 $router->addRoute("combat/show", "CombatController@show");
 
 $router->route($_GET['url'] ?? '');

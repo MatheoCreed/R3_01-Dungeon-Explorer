@@ -118,7 +118,6 @@ if ($currentIndex !== null) {
                 <div><strong>Armure</strong></div>
                 <?php if (!empty($equipment['armor'])): ?>
                     <?php $it = $equipment['armor']; ?>
-                    <img src="<?= htmlspecialchars($it['image'] ?? '') ?>" alt="<?= htmlspecialchars($it['name']) ?>">
                     <div><?= htmlspecialchars($it['name']) ?></div>
                 <?php else: ?>
                     <div>Aucune</div>
@@ -129,7 +128,6 @@ if ($currentIndex !== null) {
                 <div><strong>Arme principale</strong></div>
                 <?php if (!empty($equipment['primary_weapon'])): ?>
                     <?php $it = $equipment['primary_weapon']; ?>
-                    <img src="<?= htmlspecialchars($it['image'] ?? '') ?>" alt="<?= htmlspecialchars($it['name']) ?>">
                     <div><?= htmlspecialchars($it['name']) ?></div>
                 <?php else: ?>
                     <div>Aucune</div>
@@ -140,7 +138,6 @@ if ($currentIndex !== null) {
                 <div><strong>Arme secondaire</strong></div>
                 <?php if (!empty($equipment['secondary_weapon'])): ?>
                     <?php $it = $equipment['secondary_weapon']; ?>
-                    <img src="<?= htmlspecialchars($it['image'] ?? '') ?>" alt="<?= htmlspecialchars($it['name']) ?>">
                     <div><?= htmlspecialchars($it['name']) ?></div>
                 <?php else: ?>
                     <div>Aucune</div>
@@ -151,7 +148,6 @@ if ($currentIndex !== null) {
                 <div><strong>Bouclier</strong></div>
                 <?php if (!empty($equipment['shield'])): ?>
                     <?php $it = $equipment['shield']; ?>
-                    <img src="<?= htmlspecialchars($it['image'] ?? '') ?>" alt="<?= htmlspecialchars($it['name']) ?>">
                     <div><?= htmlspecialchars($it['name']) ?></div>
                 <?php else: ?>
                     <div>Aucun</div>
@@ -169,13 +165,7 @@ if ($currentIndex !== null) {
                 <div class="inventory-list">
                     <?php foreach ($inventory as $inv): ?>
                         <div class="inventory-item">
-                            <div>
-                                <?php if (!empty($inv['image'])): ?>
-                                    <img src="<?= htmlspecialchars($inv['image']) ?>" alt="<?= htmlspecialchars($inv['name']) ?>"
-                                        style="width:36px;height:36px;object-fit:cover;border-radius:4px;">
-                                <?php endif; ?>
                                 <div><?= htmlspecialchars($inv['name']) ?></div>
-                            </div>
                             <div><?= (int) $inv['quantity'] ?></div>
                         </div>
                     <?php endforeach; ?>

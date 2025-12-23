@@ -69,7 +69,30 @@ $logs = $combatData['logs'] ?? [];
 
 <body class="min-h-screen bg-gray-900 text-white p-4"
     style="background-image: url('<?php echo htmlspecialchars($chapter->getImage()); ?>'); background-size: cover; background-position: center;">
+        <form action="/R3_01-Dungeon-Explorer/pageUser" method="get">
+        <button type="submit" class="
+   fixed top-4 left-4 z-50
 
+   px-4 py-2
+   text-[14px]
+   text-center
+   rounded-[15px]
+   border-[3px] border-[#8f6a1b]
+
+   bg-[linear-gradient(145deg,#c9a43a,#f4d67a,#b58b2a)]
+   shadow-[inset_0_0_10px_rgba(255,225,150,0.8),_0_0_15px_rgba(0,0,0,0.4)]
+
+   cursor-pointer
+   transition-transform duration-200
+
+   hover:scale-105
+   hover:border-[#b78925]
+   hover:bg-[linear-gradient(145deg,#ffeb99,#f7d87c,#d1aa3c)]
+   hover:shadow-[inset_0_0_15px_rgba(255,240,190,1),_0_0_20px_rgba(255,200,80,0.9)]
+   ">
+            Quitter le combat
+        </button>
+    </form>
     <div class="max-w-4xl mx-auto bg-black/80 border-4 border-[#8b4513] p-6 rounded-lg shadow-2xl">
 
         <h1

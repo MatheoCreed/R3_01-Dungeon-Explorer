@@ -77,30 +77,70 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
 </head>
 
 <body class="min-h-screen chapter-bg pixelated" style="background-image: url('<?php echo $chapter->getImage(); ?>');">
-    <form action="/R3_01-Dungeon-Explorer/pageUser" method="get">
-        <button type="submit" class="
-   fixed top-4 left-4 z-50
+    <!-- Bouton Sauvegarder -->
+<form action="/R3_01-Dungeon-Explorer/pageUser" method="get">
+    <button type="submit"
+        class="px-4 py-2
+    text-[14px]
+    text-center
+    rounded-[15px]
+    border-[3px] border-[#8f6a1b]
 
-   px-4 py-2
-   text-[14px]
-   text-center
-   rounded-[15px]
-   border-[3px] border-[#8f6a1b]
+    bg-[linear-gradient(145deg,#c9a43a,#f4d67a,#b58b2a)]
+    shadow-[inset_0_0_10px_rgba(255,225,150,0.8),_0_0_15px_rgba(0,0,0,0.4)]
 
-   bg-[linear-gradient(145deg,#c9a43a,#f4d67a,#b58b2a)]
-   shadow-[inset_0_0_10px_rgba(255,225,150,0.8),_0_0_15px_rgba(0,0,0,0.4)]
+    cursor-pointer
+    transition-transform duration-200
 
-   cursor-pointer
-   transition-transform duration-200
+    hover:scale-105
+    hover:border-[#b78925]
+    hover:bg-[linear-gradient(145deg,#ffeb99,#f7d87c,#d1aa3c)]
+    hover:shadow-[inset_0_0_15px_rgba(255,240,190,1),_0_0_20px_rgba(255,200,80,0.9)];">
+        Sauvegarder
+    </button>
+</form>
 
-   hover:scale-105
-   hover:border-[#b78925]
-   hover:bg-[linear-gradient(145deg,#ffeb99,#f7d87c,#d1aa3c)]
-   hover:shadow-[inset_0_0_15px_rgba(255,240,190,1),_0_0_20px_rgba(255,200,80,0.9)]
-   ">
-            Sauvegarder
-        </button>
-    </form>
+<!-- Bouton Inventaire -->
+<form action="/R3_01-Dungeon-Explorer/equipment" method="get">
+    <button type="submit"
+        class="px-4 py-2
+    text-[14px]
+    text-center
+    rounded-[15px]
+    border-[3px] border-[#8f6a1b]
+
+    bg-[linear-gradient(145deg,#c9a43a,#f4d67a,#b58b2a)]
+    shadow-[inset_0_0_10px_rgba(255,225,150,0.8),_0_0_15px_rgba(0,0,0,0.4)]
+
+    cursor-pointer
+    transition-transform duration-200
+
+    hover:scale-105
+    hover:border-[#b78925]
+    hover:bg-[linear-gradient(145deg,#ffeb99,#f7d87c,#d1aa3c)]
+    hover:shadow-[inset_0_0_15px_rgba(255,240,190,1),_0_0_20px_rgba(255,200,80,0.9)];">
+        Inventaire
+    </button>
+</form>
+<form action="/R3_01-Dungeon-Explorer/merchant" method="get">
+    <button type="submit" class="px-4 py-2
+    text-[14px]
+    text-center
+    rounded-[15px]
+    border-[3px] border-[#8f6a1b]
+
+    bg-[linear-gradient(145deg,#c9a43a,#f4d67a,#b58b2a)]
+    shadow-[inset_0_0_10px_rgba(255,225,150,0.8),_0_0_15px_rgba(0,0,0,0.4)]
+
+    cursor-pointer
+    transition-transform duration-200
+
+    hover:scale-105
+    hover:border-[#b78925]
+    hover:bg-[linear-gradient(145deg,#ffeb99,#f7d87c,#d1aa3c)]
+    hover:shadow-[inset_0_0_15px_rgba(255,240,190,1),_0_0_20px_rgba(255,200,80,0.9)];">Marchand</button>
+  </form>
+
 
     <div class="min-h-screen bg-[rgba(0,0,0,0)]">
         <div class="max-w-2xl mx-auto my-10 px-4">
