@@ -104,7 +104,8 @@ CREATE TABLE `class` (
   `base_mana` int(11) NOT NULL,
   `strength` int(11) NOT NULL,
   `initiative` int(11) NOT NULL,
-  `max_items` int(11) NOT NULL
+  `max_items` int(11) NOT NULL,
+  `image` VARCHAR(255)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -160,7 +161,8 @@ CREATE TABLE `hero` (
   `secondary_weapon_item_id` int(11) DEFAULT NULL,
   `shield_item_id` int(11) DEFAULT NULL,
   `xp` int(11) NOT NULL,
-  `current_level` int(11) DEFAULT 1
+  `current_level` int(11) DEFAULT 1,
+  `user_id` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -180,6 +182,7 @@ INSERT INTO `hero` (`id`, `name`, `class_id`, `image`, `biography`, `pv`, `mana`
 CREATE TABLE `hero_progress` (
   `hero_id` int(11) NOT NULL,
   `chapter_id` int(11) NOT NULL
+  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -696,7 +699,8 @@ CREATE TABLE `users_aria` (
   `id` int(10) UNSIGNED NOT NULL,
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password_hash` varchar(255) NOT NULL
+  `password_hash` varchar(255) NOT NULL,
+  `is_admin` TINYINT(1) NOT NULL DEFAULT 0
 ) ENGINE=Aria DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -746,8 +750,12 @@ ALTER TABLE `hero`
 -- Index pour la table `hero_progress`
 --
 ALTER TABLE `hero_progress`
-  ADD PRIMARY KEY (`hero_id`,`chapter_id`),
-  ADD KEY `chapter_id` (`chapter_id`);
+ADD PRIMARY KEY (`hero_id`, `chapter_id`),
+ADD CONSTRAINT `fk_hero_progress_hero`
+    FOREIGN KEY (`hero_id`) REFERENCES `Hero`(`id`) ON DELETE CASCADE,
+ADD CONSTRAINT `fk_hero_progress_chapter`
+    FOREIGN KEY (`chapter_id`) REFERENCES `Chapter`(`id`);
+
 
 --
 -- Index pour la table `hero_spell`

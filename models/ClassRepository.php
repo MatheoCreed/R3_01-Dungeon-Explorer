@@ -1,70 +1,62 @@
 <?php
 
 require_once "Class.php";
-class ClassRepository {
 
+class ClassRepository
+{
+    private PDO $pdo;
 
-	private PDO $db;
-
-	public function __construct()
-	{
-		$this->db = new PDO(
-			"mysql:host=localhost;dbname=dungeon_explorer;charset=utf8",
-			"root",
-			"",
-		);
-	}
-
-	public function getAll(): array
-	{
-		$stmt = $this->db->query("SELECT * FROM Class");
-
-		$classes = [];
-
-		while ($row = $stmt->fetch()) {
-			$classes[] = new GameClass(
-				$row['name'],
-				$row['description'],
-				$row['base_pv'],
-				$row['base_mana'],
-				$row['strength'],
-				$row['initiative'],
-				$row['max_items'],
-				$row['id'],
-                $row['image']
-			);
-		}
-
-		return $classes;
-	}
-
-	public function getById(int $id): ?GameClass
+    public function __construct(PDO $pdo)
     {
-        $stmt = $this->db->prepare("SELECT * FROM Class WHERE id = ?");
+        $this->pdo = $pdo;
+    }
+
+    public function getAll(): array
+    {
+        $stmt = $this->pdo->query("SELECT * FROM Class");
+        $classes = [];
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $classes[] = new GameClass(
+                $row['name'],
+                $row['description'],
+                (int)$row['base_pv'],
+                (int)$row['base_mana'],
+                (int)$row['strength'],
+                (int)$row['initiative'],
+                (int)$row['max_items'],
+                (int)$row['id'],
+                $row['image']
+            );
+        }
+
+        return $classes;
+    }
+
+    public function getById(int $id): ?GameClass
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM Class WHERE id = ?");
         $stmt->execute([$id]);
 
-        $row = $stmt->fetch();
-
-        if (!$row) {
-            return null;
-        }
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return null;
 
         return new GameClass(
             $row['name'],
             $row['description'],
-            $row['base_pv'],
-            $row['base_mana'],
-            $row['strength'],
-            $row['initiative'],
-            $row['max_items'],
-            $row['id'],
+            (int)$row['base_pv'],
+            (int)$row['base_mana'],
+            (int)$row['strength'],
+            (int)$row['initiative'],
+            (int)$row['max_items'],
+            (int)$row['id'],
             $row['image']
         );
     }
 
     public function create(GameClass $class): bool
     {
-        $stmt = $this->db->prepare("
+        $stmt = $this->pdo->prepare("
             INSERT INTO Class (name, description, base_pv, base_mana, strength, initiative, max_items, image)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
@@ -83,8 +75,8 @@ class ClassRepository {
 
     public function update(GameClass $class): bool
     {
-        $stmt = $this->db->prepare("
-            UPDATE Class 
+        $stmt = $this->pdo->prepare("
+            UPDATE Class
             SET name = ?, description = ?, base_pv = ?, base_mana = ?, strength = ?, initiative = ?, max_items = ?, image = ?
             WHERE id = ?
         ");
@@ -104,8 +96,7 @@ class ClassRepository {
 
     public function delete(int $id): bool
     {
-        $stmt = $this->db->prepare("DELETE FROM Class WHERE id = ?");
+        $stmt = $this->pdo->prepare("DELETE FROM Class WHERE id = ?");
         return $stmt->execute([$id]);
     }
 }
-

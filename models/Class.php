@@ -84,11 +84,6 @@ class GameClass
 			'image' => $this->image
 		];
 	}
-
-	/**
-	 * Apply this class base stats to a hero-like array/object.
-	 * This is a lightweight helper — adapt as needed to your Hero model.
-	 */
 	public function applyTo(&$hero)
 	{
 		if (is_array($hero)) {

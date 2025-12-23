@@ -40,7 +40,7 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
         $erow = $stmtEnc->fetch(PDO::FETCH_ASSOC);
         if ($erow && !empty($erow['monster_id'])) {
             $hasEncounter = true;
-            $encounterMonsterId = (int)$erow['monster_id'];
+            $encounterMonsterId = (int) $erow['monster_id'];
         }
     } catch (Exception $e) {
         // ignore DB errors in view
@@ -50,6 +50,7 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
 
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -57,12 +58,50 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        .chapter-bg { background-repeat: no-repeat; background-size: cover; background-position: center; }
-        body, input, button { font-family: 'Press Start 2P', monospace; }
-        .pixelated { image-rendering: pixelated; }
+        .chapter-bg {
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        body,
+        input,
+        button {
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        .pixelated {
+            image-rendering: pixelated;
+        }
     </style>
 </head>
+
 <body class="min-h-screen chapter-bg pixelated" style="background-image: url('<?php echo $chapter->getImage(); ?>');">
+    <form action="/R3_01-Dungeon-Explorer/pageUser" method="get">
+        <button type="submit" class="
+   fixed top-4 left-4 z-50
+
+   px-4 py-2
+   text-[14px]
+   text-center
+   rounded-[15px]
+   border-[3px] border-[#8f6a1b]
+
+   bg-[linear-gradient(145deg,#c9a43a,#f4d67a,#b58b2a)]
+   shadow-[inset_0_0_10px_rgba(255,225,150,0.8),_0_0_15px_rgba(0,0,0,0.4)]
+
+   cursor-pointer
+   transition-transform duration-200
+
+   hover:scale-105
+   hover:border-[#b78925]
+   hover:bg-[linear-gradient(145deg,#ffeb99,#f7d87c,#d1aa3c)]
+   hover:shadow-[inset_0_0_15px_rgba(255,240,190,1),_0_0_20px_rgba(255,200,80,0.9)]
+   ">
+            Sauvegarder
+        </button>
+    </form>
+
     <div class="min-h-screen bg-[rgba(0,0,0,0)]">
         <div class="max-w-2xl mx-auto my-10 px-4">
             <h1 class="text-yellow-900 text-[14px] mb-4"><?php echo htmlspecialchars($chapter->getTitle()); ?></h1>
@@ -82,10 +121,11 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
                 <div class="grid gap-3">
                     <?php if ($hasEncounter): ?>
                         <!-- Formulaire POST pour combattre (au lieu de lien GET) -->
-                        <form method="post" action="index.php">
+                        <form method="post"
+                            action="/R3_01-Dungeon-Explorer/combat/show?chapter=<?= (int) ($chapter->getId() ?? $chapterId ?? 0); ?>">
                             <input type="hidden" name="action" value="fight">
-                            <input type="hidden" name="chapter_id" value="<?php echo (int)($chapter->getId() ?? $chapterId ?? 0); ?>">
-                            <button type="submit" class="w-full text-center py-3 px-4 rounded-lg bg-gradient-to-b from-[#c53030] to-[#8b0000] border-[5px] border-[#2b2116] text-white text-[12px] hover:brightness-95 transition">
+                            <button type="submit"
+                                class="w-full text-center py-3 px-4 rounded-lg bg-gradient-to-b from-[#c53030] to-[#8b0000] border-[5px] border-[#2b2116] text-white text-[12px] hover:brightness-95 transition">
                                 Combattre
                             </button>
                         </form>
@@ -94,8 +134,9 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
                         <?php foreach ($chapter->getChoices() as $choice): ?>
                             <form method="post" action="index.php?url=next">
                                 <input type="hidden" name="action" value="choose">
-                                <input type="hidden" name="next_chapter_id" value="<?php echo (int)$choice['chapter']; ?>">
-                                <button type="submit" class="w-full text-center py-3 px-4 rounded-lg bg-gradient-to-b from-[#8b3b0f] to-[#5b1f05] border-[5px] border-[#2b2116] text-white text-[12px] hover:brightness-95 transition">
+                                <input type="hidden" name="next_chapter_id" value="<?php echo (int) $choice['chapter']; ?>">
+                                <button type="submit"
+                                    class="w-full text-center py-3 px-4 rounded-lg bg-gradient-to-b from-[#8b3b0f] to-[#5b1f05] border-[5px] border-[#2b2116] text-white text-[12px] hover:brightness-95 transition">
                                     <?php echo htmlspecialchars($choice['text']); ?>
                                 </button>
                             </form>
@@ -107,4 +148,5 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
         </div>
     </div>
 </body>
+
 </html>

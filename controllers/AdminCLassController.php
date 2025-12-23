@@ -7,7 +7,9 @@ class AdminClassController
 
     public function __construct()
     {
-        $this->repo = new ClassRepository();
+        global $db; // ou $pdo selon ton fichier Database.php
+        $this->repo = new ClassRepository($db);
+
     }
 
     public function index()
@@ -39,14 +41,15 @@ class AdminClassController
         // Upload image
         if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
             $originalName = $_FILES['image_file']['name'];
-            $tmpFile      = $_FILES['image_file']['tmp_name'];
+            $tmpFile = $_FILES['image_file']['tmp_name'];
 
             $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
             $allowed = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
-            if (!in_array($ext, $allowed)) die("Erreur : format d'image non valide");
+            if (!in_array($ext, $allowed))
+                die("Erreur : format d'image non valide");
 
             $baseName = preg_replace('/[^a-zA-Z0-9-_]/', '_', pathinfo($originalName, PATHINFO_FILENAME));
-            $newName  = $baseName . "_" . uniqid() . "." . $ext;
+            $newName = $baseName . "_" . uniqid() . "." . $ext;
 
             $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/R3_01-Dungeon-Explorer/sprites/joueur/";
             $finalPath = $uploadDir . $newName;
@@ -55,7 +58,8 @@ class AdminClassController
                 mkdir($uploadDir, 0755, true);
             }
 
-            if (!move_uploaded_file($tmpFile, $finalPath)) die("Erreur lors du déplacement du fichier.");
+            if (!move_uploaded_file($tmpFile, $finalPath))
+                die("Erreur lors du déplacement du fichier.");
 
             // Chemin stocké en BDD (URL)
             $imagePath = "/R3_01-Dungeon-Explorer/sprites/joueur/" . $newName;
@@ -83,10 +87,11 @@ class AdminClassController
     ============================================================ */
     public function edit()
     {
-        $id = (int)($_GET["id"] ?? 0);
+        $id = (int) ($_GET["id"] ?? 0);
         $class = $this->repo->getById($id);
 
-        if (!$class) die("Classe introuvable.");
+        if (!$class)
+            die("Classe introuvable.");
 
         require "views/admin/class/edit.php";
     }
@@ -101,10 +106,11 @@ class AdminClassController
             exit;
         }
 
-        $id = (int)($_POST["id"] ?? 0);
+        $id = (int) ($_POST["id"] ?? 0);
         $existing = $this->repo->getById($id);
 
-        if (!$existing) die("Classe introuvable.");
+        if (!$existing)
+            die("Classe introuvable.");
 
         // Par défaut : on garde l'image existante
         $imagePath = $existing->getImage();
@@ -115,19 +121,21 @@ class AdminClassController
             // 1) supprimer ancienne image (si existante)
             if (!empty($existing->getImage())) {
                 $oldFile = $_SERVER['DOCUMENT_ROOT'] . $existing->getImage();
-                if (file_exists($oldFile)) unlink($oldFile);
+                if (file_exists($oldFile))
+                    unlink($oldFile);
             }
 
             // 2) upload nouvelle image
             $originalName = $_FILES['image_file']['name'];
-            $tmpFile      = $_FILES['image_file']['tmp_name'];
+            $tmpFile = $_FILES['image_file']['tmp_name'];
 
             $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
             $allowed = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
-            if (!in_array($ext, $allowed)) die("Erreur : format d'image non valide");
+            if (!in_array($ext, $allowed))
+                die("Erreur : format d'image non valide");
 
             $baseName = preg_replace('/[^a-zA-Z0-9-_]/', '_', pathinfo($originalName, PATHINFO_FILENAME));
-            $newName  = $baseName . "_" . uniqid() . "." . $ext;
+            $newName = $baseName . "_" . uniqid() . "." . $ext;
 
             $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/R3_01-Dungeon-Explorer/sprites/joueur/";
             $finalPath = $uploadDir . $newName;
@@ -136,7 +144,8 @@ class AdminClassController
                 mkdir($uploadDir, 0755, true);
             }
 
-            if (!move_uploaded_file($tmpFile, $finalPath)) die("Erreur lors du déplacement du fichier.");
+            if (!move_uploaded_file($tmpFile, $finalPath))
+                die("Erreur lors du déplacement du fichier.");
 
             $imagePath = "/R3_01-Dungeon-Explorer/sprites/joueur/" . $newName;
         }
@@ -164,13 +173,14 @@ class AdminClassController
     ============================================================ */
     public function delete()
     {
-        $id = (int)($_GET["id"] ?? 0);
+        $id = (int) ($_GET["id"] ?? 0);
         $existing = $this->repo->getById($id);
 
         // Supprimer l'image associée
         if ($existing && !empty($existing->getImage())) {
             $file = $_SERVER['DOCUMENT_ROOT'] . $existing->getImage();
-            if (file_exists($file)) unlink($file);
+            if (file_exists($file))
+                unlink($file);
         }
 
         $this->repo->delete($id);

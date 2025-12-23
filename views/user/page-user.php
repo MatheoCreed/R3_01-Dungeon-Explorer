@@ -3,9 +3,9 @@
 // $user vient de show()
 
 $displayName = htmlspecialchars($user['username'] ?? 'Invité');
-$level = (int) ($hero['current_level'] ?? 1);
 $xp = (int) ($hero['xp'] ?? 0);
-$xp_max = 1000;
+$xp_max = (int)($xp_max ?? 0);
+$level  = max(1, (int)($hero['current_level'] ?? 1));
 $heroName = $hero['name'] ?? 'Aucun héros';
 
 
@@ -92,7 +92,9 @@ if ($currentIndex !== null) {
         <div class="xp-bar">
             <div id="xp-fill" class="xp-fill"></div>
         </div>
-        <p id="xp-text"><?= $xp ?> / <?= $xp_max ?> XP</p>
+        <p id="xp-text">
+            <?= $xp ?> / <?= $xp_max > 0 ? $xp_max : "MAX" ?> XP
+</p>
     </div>
 
     <!-- Panneau central : stats / équipement / inventaire -->
@@ -101,7 +103,7 @@ if ($currentIndex !== null) {
         <div class="stats-card">
             <h3>Statistiques</h3>
             <p><strong>Niveau :</strong> <?= $level ?></p>
-            <p><strong>XP :</strong> <?= $xp ?> / <?= $xp_max ?></p>
+            <p><strong>XP :</strong> <?= $xp ?> / <?= $xp_max > 0 ? $xp_max : "MAX" ?></p>
             <p><strong>PV :</strong> <?= (int) ($hero['pv'] ?? 0) ?></p>
             <p><strong>Mana :</strong> <?= (int) ($hero['mana'] ?? 0) ?></p>
             <p><strong>Force :</strong> <?= (int) ($hero['strength'] ?? 0) ?></p>

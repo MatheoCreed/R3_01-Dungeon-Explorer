@@ -5,7 +5,6 @@ require_once __DIR__ . '/../models/Item.php';
 
 class PageUserController
 {
-
     private $pdo;
     private $itemModel;
 
@@ -17,38 +16,28 @@ class PageUserController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+
         $this->itemModel = new ItemModel($this->pdo);
     }
 
     public function index()
     {
-
-        // Vérifier si l'utilisateur est connecté
         if (!isset($_SESSION['user_id'])) {
             die("Vous devez être connecté pour accéder à cette page.");
         }
 
         $userId = $_SESSION['user_id'];
 
-        // ⬇ 1) Récupérer les infos de l'utilisateur
-        $stmt = $this->pdo->prepare("
-            SELECT id, username, is_admin
-            FROM users_aria
-            WHERE id = ?
-        ");
+        $stmt = $this->pdo->prepare("SELECT id, username, is_admin FROM users_aria WHERE id = ?");
         $stmt->execute([$userId]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$user) {
+        if (!$user)
             die("Utilisateur introuvable.");
-        }
 
-        // Charger TOUS les héros de l'utilisateur (order by id asc)
         $stmt = $this->pdo->prepare("SELECT * FROM Hero WHERE user_id = ? ORDER BY id ASC");
         $stmt->execute([$userId]);
-        $heroes = $stmt->fetchAll(PDO::FETCH_ASSOC); // peut être []
-        // Déterminer le héros sélectionné : ?hero=ID sinon premier (ou null si aucun)
-        // Déterminer le héros sélectionné
+        $heroes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         $selectedHero = null;
 
         if (isset($_GET['hero']) && $_GET['hero'] !== '') {
@@ -65,13 +54,10 @@ class PageUserController
             $selectedHero = end($heroes);
         }
 
-        /* 👇 AJOUT ICI : on stocke l'ID du héros sélectionné dans la session */
         if ($selectedHero) {
             $_SESSION['hero_id'] = (int) $selectedHero['id'];
-
         }
 
-        // Récupérer l'équipement (items équipés) et l'inventaire pour le héros sélectionné
         $equipment = [
             'armor' => null,
             'primary_weapon' => null,
@@ -81,14 +67,12 @@ class PageUserController
         $inventory = [];
 
         if (!empty($selectedHero)) {
-            // équipements — noms des colonnes dans ta table Hero : armor_item_id, primary_weapon_item_id, ...
             $armorId = $selectedHero['armor_item_id'] ?? null;
             $primaryId = $selectedHero['primary_weapon_item_id'] ?? null;
             $secondaryId = $selectedHero['secondary_weapon_item_id'] ?? null;
             $shieldId = $selectedHero['shield_item_id'] ?? null;
 
-            $ids = array_filter([$armorId, $primaryId, $secondaryId, $shieldId], function ($v) {
-                return !is_null($v) && $v !== ''; });
+            $ids = array_filter([$armorId, $primaryId, $secondaryId, $shieldId], fn($v) => !is_null($v) && $v !== '');
             $items = $this->itemModel->getByIds($ids);
 
             if ($armorId && isset($items[$armorId]))
@@ -100,18 +84,54 @@ class PageUserController
             if ($shieldId && isset($items[$shieldId]))
                 $equipment['shield'] = $items[$shieldId];
 
-            // inventaire complet (table Inventory join Items)
-            $inventory = $this->itemModel->getInventoryForHero((int) $selectedHero['id']); // tableau de rows item + quantity
+            $inventory = $this->itemModel->getInventoryForHero((int) $selectedHero['id']);
         }
 
-        // Passer tout à la vue
-        // variables disponibles dans la vue : $user, $heroes, $selectedHero (ou $hero), $equipment, $inventory
-        $hero = $selectedHero; // pour compatibilité avec ta vue existante
+        $hero = $selectedHero;
 
-        // ⬇ 3) Charger la vue
+        $xp_max = 0;
+        if (!empty($hero)) {
+            // ✅ sécurité : niveau minimum 1
+            if (!isset($hero['current_level']) || (int) $hero['current_level'] < 1) {
+                $hero['current_level'] = 1;
+
+                // (optionnel) corriger direct en BDD
+                $fix = $this->pdo->prepare("UPDATE Hero SET current_level = 1 WHERE id = ?");
+                $fix->execute([(int) $hero['id']]);
+            }
+
+            $xp_max = $this->getNextRequiredXp((int) $hero['class_id'], (int) $hero['current_level']);
+        }
+
+
         require __DIR__ . '/../views/user/page-user.php';
     }
+
+    private function getNextRequiredXp(int $classId, int $currentLevel): int
+{
+    // ✅ sécurité : niveau minimum 1
+    $currentLevel = max(1, $currentLevel);
+    $nextLevel = $currentLevel + 1;
+
+    // XP requis pour le niveau suivant
+    $stmt = $this->pdo->prepare("
+        SELECT required_xp
+        FROM `level`
+        WHERE class_id = ? AND level = ?
+        LIMIT 1
+    ");
+    $stmt->execute([$classId, $nextLevel]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($row) return (int)$row['required_xp'];
+
+    // Si pas de niveau suivant : MAX (0)
+    return 0;
 }
+
+}
+
+
 
 
 
