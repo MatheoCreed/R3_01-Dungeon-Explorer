@@ -4,8 +4,8 @@
 
 $displayName = htmlspecialchars($user['username'] ?? 'Invité');
 $xp = (int) ($hero['xp'] ?? 0);
-$xp_max = (int)($xp_max ?? 0);
-$level  = max(1, (int)($hero['current_level'] ?? 1));
+$xp_max = (int) ($xp_max ?? 0);
+$level = max(1, (int) ($hero['current_level'] ?? 1));
 $heroName = $hero['name'] ?? 'Aucun héros';
 
 
@@ -77,7 +77,13 @@ if ($currentIndex !== null) {
         </button>
 
 
-        <button class="btn">Supprimer Sauvegarde</button>
+        <form action="/R3_01-Dungeon-Explorer/hero/delete" method="post"
+            onsubmit="return confirm('Supprimer ce héros et toutes ses données ?');">
+            <input type="hidden" name="hero_id" value="<?= (int) ($hero['id'] ?? 0) ?>">
+            <button type="submit" class="btn">
+                Supprimer Sauvegarde
+            </button>
+        </form>
         <button class="btn"><a href="connexion">Se déconnecter</a></button>
 
         <?php if ($isAdmin): ?>
@@ -94,7 +100,7 @@ if ($currentIndex !== null) {
         </div>
         <p id="xp-text">
             <?= $xp ?> / <?= $xp_max > 0 ? $xp_max : "MAX" ?> XP
-</p>
+        </p>
     </div>
 
     <!-- Panneau central : stats / équipement / inventaire -->
@@ -107,7 +113,7 @@ if ($currentIndex !== null) {
             <p><strong>PV :</strong> <?= (int) ($hero['pv'] ?? 0) ?></p>
             <p><strong>Mana :</strong> <?= (int) ($hero['mana'] ?? 0) ?></p>
             <p><strong>Force :</strong> <?= (int) ($hero['strength'] ?? 0) ?></p>
-            <p><strong>Initiative :</strong> <?= (int) ($hero['initiative'] ?? 0) ?></p>     
+            <p><strong>Initiative :</strong> <?= (int) ($hero['initiative'] ?? 0) ?></p>
         </div>
 
         <!-- EQUIPEMENT -->
@@ -165,7 +171,7 @@ if ($currentIndex !== null) {
                 <div class="inventory-list">
                     <?php foreach ($inventory as $inv): ?>
                         <div class="inventory-item">
-                                <div><?= htmlspecialchars($inv['name']) ?></div>
+                            <div><?= htmlspecialchars($inv['name']) ?></div>
                             <div><?= (int) $inv['quantity'] ?></div>
                         </div>
                     <?php endforeach; ?>

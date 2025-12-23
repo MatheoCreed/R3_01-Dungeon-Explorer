@@ -52,7 +52,7 @@ $router->addRoute('pageUser', 'PageUserController@index');
 $router->addRoute('hero/create', 'HeroController@createPage');
 $router->addRoute('hero/insert', 'HeroController@insert');
 $router->addRoute('hero/show', 'HeroController@show');
-
+$router->addRoute('hero/delete', 'HeroController@delete');
 $router->addRoute('admin/chapter/index', 'ChapterAdminController@index');
 $router->addRoute('admin/chapter/create', 'ChapterAdminController@create');
 $router->addRoute('admin/chapter/edit', 'ChapterAdminController@edit');

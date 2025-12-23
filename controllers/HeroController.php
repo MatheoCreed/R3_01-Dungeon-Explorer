@@ -84,7 +84,6 @@ $userId = $_SESSION['user_id'];
             [], // spellList
             0,  // xp
             1,  // currentLevel
-            null // id
         );
 
         // Sauvegarde en DB (on passe $userId pour remplir user_id)
@@ -180,5 +179,78 @@ $userId = $_SESSION['user_id'];
     require __DIR__ . '/../views/user/page-user.php';
 }
 
+public function delete()
+{
+    // Autoriser uniquement POST
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        die("Méthode non autorisée");
+    }
 
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (!isset($_SESSION['user_id'])) {
+        die("Vous devez être connecté.");
+    }
+
+    $userId = (int)$_SESSION['user_id'];
+    $heroId = (int)($_POST['hero_id'] ?? 0);
+
+    if ($heroId <= 0) {
+        die("Héros invalide.");
+    }
+
+    // Vérifier que le héros appartient bien à l'utilisateur connecté
+    $stmt = $this->pdo->prepare("SELECT id FROM hero WHERE id = ? AND user_id = ? LIMIT 1");
+    $stmt->execute([$heroId, $userId]);
+    $heroRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$heroRow) {
+        die("Suppression interdite : héros introuvable ou ne vous appartient pas.");
+    }
+
+    try {
+        $this->pdo->beginTransaction();
+
+        // 1) Supprimer inventaire (sinon FK bloque la suppression du hero)
+        $stmt = $this->pdo->prepare("DELETE FROM inventory WHERE hero_id = ?");
+        $stmt->execute([$heroId]);
+
+        // 2) Supprimer sorts du héros
+        $stmt = $this->pdo->prepare("DELETE FROM hero_spell WHERE hero_id = ?");
+        $stmt->execute([$heroId]);
+
+        // 3) Supprimer progression
+        $stmt = $this->pdo->prepare("DELETE FROM hero_progress WHERE hero_id = ?");
+        $stmt->execute([$heroId]);
+
+        // 4) Supprimer le héros
+        $stmt = $this->pdo->prepare("DELETE FROM hero WHERE id = ? AND user_id = ?");
+        $stmt->execute([$heroId, $userId]);
+
+        $this->pdo->commit();
+    } catch (Exception $e) {
+        $this->pdo->rollBack();
+        die("Erreur suppression : " . $e->getMessage());
+    }
+
+    // Si c'était le héros sélectionné, on le retire de la session
+    if (isset($_SESSION['hero_id']) && (int)$_SESSION['hero_id'] === $heroId) {
+        unset($_SESSION['hero_id']);
+    }
+
+    // Rediriger vers un autre héros si possible, sinon pageUser sans param
+    $stmt = $this->pdo->prepare("SELECT id FROM hero WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+    $stmt->execute([$userId]);
+    $other = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($other) {
+        header("Location: /R3_01-Dungeon-Explorer/pageUser?hero=" . (int)$other['id']);
+    } else {
+        header("Location: /R3_01-Dungeon-Explorer/pageUser");
+    }
+    exit;
+}
 }
