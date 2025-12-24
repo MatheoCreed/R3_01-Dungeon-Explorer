@@ -1,3 +1,7 @@
+<?php
+// $old (array), $errors (array), $action (string), $submitLabel (string)
+?>
+
 <?php if (!empty($errors)): ?>
     <div class="admin-error">
         <ul>
@@ -37,20 +41,15 @@
     <input type="number" name="xp" class="admin-input" min="0"
            value="<?= htmlspecialchars($old['xp'] ?? '') ?>" required>
 
-    <!-- UPLOAD IMAGE -->
     <label class="admin-label">Uploader une image</label>
     <input type="file" name="image_file" class="admin-input" accept="image/*">
 
     <?php if (!empty($old['image'])): ?>
         <div style="margin-top:10px">
             <small>Image actuelle :</small><br>
-            <img src="<?= htmlspecialchars($old['image']) ?>"
-                 alt="Image du monstre"
-                 style="max-height:90px;border-radius:8px">
+            <img src="<?= htmlspecialchars($old['image']) ?>" alt="" style="max-height:90px;border-radius:8px">
         </div>
     <?php endif; ?>
 
-    <button type="submit" class="admin-btn">
-        <?= htmlspecialchars($submitLabel) ?>
-    </button>
+    <button type="submit" class="admin-btn"><?= htmlspecialchars($submitLabel) ?></button>
 </form>

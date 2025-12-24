@@ -77,6 +77,21 @@ $router->addRoute("admin/class/edit", "AdminClassController@edit");
 $router->addRoute("admin/class/update", "AdminClassController@update");
 $router->addRoute("admin/class/delete", "AdminClassController@delete");
 
+$router->addRoute('admin/monster/index', 'AdminMonsterController@index');
+$router->addRoute('admin/monster/create', 'AdminMonsterController@create');
+$router->addRoute('admin/monster/store', 'AdminMonsterController@store');
+$router->addRoute('admin/monster/edit', 'AdminMonsterController@edit');
+$router->addRoute('admin/monster/update', 'AdminMonsterController@update');
+$router->addRoute('admin/monster/delete', 'AdminMonsterController@delete');
+$router->addRoute('admin/monster/chapters', 'AdminMonsterController@chapters');        // page gestion apparitions
+$router->addRoute('admin/monster/chapters/add', 'AdminMonsterController@addChapter');  // ajouter apparition
+$router->addRoute('admin/monster/chapters/delete', 'AdminMonsterController@deleteChapter'); // supprimer apparition
+
+// (optionnel) gestion loot
+$router->addRoute('admin/monster/loot', 'AdminMonsterController@loot');
+$router->addRoute('admin/monster/loot/add', 'AdminMonsterController@addLoot');
+$router->addRoute('admin/monster/loot/delete', 'AdminMonsterController@deleteLoot');
+
 $router->addRoute('equipment', 'EquipmentController@index');
 $router->addRoute('equipment/equip', 'EquipmentController@equip');
 $router->addRoute('equipment/unequip', 'EquipmentController@unequip');
@@ -85,5 +100,7 @@ $router->addRoute('merchant', 'MerchantController@show');
 $router->addRoute('merchant/buy', 'MerchantController@buy');
 
 $router->addRoute("combat/show", "CombatController@show");
+
+
 
 $router->route($_GET['url'] ?? '');

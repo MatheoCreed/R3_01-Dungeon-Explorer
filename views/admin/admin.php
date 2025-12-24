@@ -21,7 +21,7 @@
             <a href="admin/link/index" class="admin-btn">Gestion des Liens entre chapitres</a>
             <a href="admin/user/index" class="admin-btn">Gestion des Utilisateurs</a>
             <a href="admin/class/index" class="admin-btn">Gestion des Classes</a>
-
+            <a href="admin/monster/index" class="admin-btn">Gestion des Monstres</a>
         </div>
 
        

@@ -125,14 +125,6 @@ class MerchantController
             // Ajouter item au héros
             $this->addToInventory($heroId, $itemId, $qty);
 
-            // Décrémenter stock marchand
-            $stmt = $this->pdo->prepare("
-                UPDATE marchand_inventory
-                SET quantity = quantity - ?
-                WHERE marchand_id = ? AND item_id = ?
-            ");
-            $stmt->execute([$qty, $pnjId, $itemId]);
-
             $this->pdo->commit();
 
             $_SESSION['flash'] = ['type' => 'ok', 'msg' => "Achat réussi ! (-$total pièces)"];
