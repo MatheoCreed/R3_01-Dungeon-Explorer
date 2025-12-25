@@ -7,6 +7,35 @@
 -- Version du serveur : 10.4.32-MariaDB
 -- Version de PHP : 8.2.12
 
+-- Désactiver la vérification des clés étrangères pour éviter les erreurs de dépendance
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Suppression des tables de liaison et de contenu spécifique
+DROP TABLE IF EXISTS `hero_progress`;
+DROP TABLE IF EXISTS `hero_spell`;
+DROP TABLE IF EXISTS `inventory`;
+DROP TABLE IF EXISTS `marchand_inventory`;
+DROP TABLE IF EXISTS `chapter_treasure`;
+DROP TABLE IF EXISTS `monster_loot`;
+DROP TABLE IF EXISTS `encounter`;
+DROP TABLE IF EXISTS `links`;
+DROP TABLE IF EXISTS `pnj_dialogue`;
+DROP TABLE IF EXISTS `level`;
+
+-- Suppression des entités principales
+DROP TABLE IF EXISTS `marchand`;
+DROP TABLE IF EXISTS `hero`;
+DROP TABLE IF EXISTS `spell`;
+DROP TABLE IF EXISTS `monster`;
+DROP TABLE IF EXISTS `pnj`;
+DROP TABLE IF EXISTS `chapter`;
+DROP TABLE IF EXISTS `items`;
+DROP TABLE IF EXISTS `class`;
+DROP TABLE IF EXISTS `users_aria`;
+
+-- Réactiver la vérification des clés étrangères
+SET FOREIGN_KEY_CHECKS = 1;
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
