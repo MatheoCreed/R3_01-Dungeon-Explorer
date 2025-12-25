@@ -77,8 +77,7 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
 </head>
 
 <body class="min-h-screen chapter-bg pixelated" style="background-image: url('<?php echo $chapter->getImage(); ?>');">
-    <!-- Bouton Sauvegarder -->
-<form action="/R3_01-Dungeon-Explorer/pageUser" method="get">
+    <form action="/R3_01-Dungeon-Explorer/pageUser" method="get">
     <button type="submit"
         class="px-4 py-2
     text-[14px]
@@ -100,7 +99,6 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
     </button>
 </form>
 
-<!-- Bouton Inventaire -->
 <form action="/R3_01-Dungeon-Explorer/equipment" method="get">
     <button type="submit"
         class="px-4 py-2
@@ -160,7 +158,6 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
 
                 <div class="grid gap-3">
                     <?php if ($hasEncounter): ?>
-                        <!-- Formulaire POST pour combattre (au lieu de lien GET) -->
                         <form method="post"
                             action="/R3_01-Dungeon-Explorer/combat/show?chapter=<?= (int) ($chapter->getId() ?? $chapterId ?? 0); ?>">
                             <input type="hidden" name="action" value="fight">
@@ -170,7 +167,6 @@ if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
                             </button>
                         </form>
                     <?php else: ?>
-                        <!-- Choix normaux -->
                         <?php foreach ($chapter->getChoices() as $choice): ?>
                             <form method="post" action="index.php?url=next">
                                 <input type="hidden" name="action" value="choose">

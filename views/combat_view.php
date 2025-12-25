@@ -8,13 +8,13 @@ if (!$combatData) {
 }
 
 $currentHeroPv = (int) $combatData['hero_pv'];
-$maxHeroPv = max(1, (int) $combatData['hero_max_pv']); // ✅ évite division par 0
+$maxHeroPv = max(1, (int) $combatData['hero_max_pv']); // évite division par 0
 
 $currentHeroMana = (int) $combatData['hero_mana'];
-$maxHeroMana = max(1, (int) $combatData['hero_max_mana']); // ✅ évite division par 0
+$maxHeroMana = max(1, (int) $combatData['hero_max_mana']); // évite division par 0
 
 $currentMonsterPv = max(0, (int) $combatData['monster_pv']);
-$maxMonsterPv = max(1, (int) $combatData['monster_max_pv']); // ✅
+$maxMonsterPv = max(1, (int) $combatData['monster_max_pv']);
 
 $isFinished = !empty($combatData['finished']);
 $logs = $combatData['logs'] ?? [];
@@ -38,31 +38,6 @@ $logs = $combatData['logs'] ?? [];
 
         .pixelated {
             image-rendering: pixelated;
-        }
-
-        /* Barre de vie simple CSS */
-        .health-bar-bg {
-            background-color: #5c4b43;
-            height: 20px;
-            width: 100%;
-            border: 2px solid #2b2116;
-        }
-
-        .health-bar-fill {
-            height: 100%;
-            transition: width 0.3s;
-        }
-
-        .hp-high {
-            background-color: #4ade80;
-        }
-
-        .hp-mid {
-            background-color: #facc15;
-        }
-
-        .hp-low {
-            background-color: #ef4444;
         }
     </style>
 </head>
@@ -107,15 +82,20 @@ $logs = $combatData['logs'] ?? [];
                     (<?php echo htmlspecialchars($hero->getClassName()); ?>)</h2>
 
                 <div class="mb-1 text-xs">PV: <?php echo $currentHeroPv; ?> / <?php echo $maxHeroPv; ?></div>
-                <div class="health-bar-bg mb-2">
+                <div class="w-full h-5 bg-[#5c4b43] border-2 border-[#2b2116] mb-2">
                     <?php $pct = ($currentHeroPv / $maxHeroPv) * 100; ?>
-                    <div class="health-bar-fill <?php echo $pct > 50 ? 'hp-high' : ($pct > 20 ? 'hp-mid' : 'hp-low'); ?>"
+                    <?php 
+                        $hpColorClass = 'bg-[#ef4444]'; // low
+                        if ($pct > 50) $hpColorClass = 'bg-[#4ade80]'; // high
+                        elseif ($pct > 20) $hpColorClass = 'bg-[#facc15]'; // mid
+                    ?>
+                    <div class="h-full transition-[width] duration-300 <?php echo $hpColorClass; ?>"
                         style="width: <?php echo $pct; ?>%;"></div>
                 </div>
 
                 <div class="mb-1 text-xs">Mana: <?php echo $currentHeroMana; ?> / <?php echo $maxHeroMana; ?></div>
-                <div class="health-bar-bg border-blue-900 bg-gray-800">
-                    <div class="health-bar-fill bg-blue-500"
+                <div class="w-full h-5 bg-gray-800 border-2 border-blue-900">
+                    <div class="h-full transition-[width] duration-300 bg-blue-500"
                         style="width: <?php echo ($currentHeroMana / $maxHeroMana) * 100; ?>%;"></div>
                 </div>
 
@@ -139,9 +119,14 @@ $logs = $combatData['logs'] ?? [];
 
                 <div class="mb-1 text-xs text-right">PV: <?php echo $currentMonsterPv; ?> / <?php echo $maxMonsterPv; ?>
                 </div>
-                <div class="health-bar-bg mb-2">
+                <div class="w-full h-5 bg-[#5c4b43] border-2 border-[#2b2116] mb-2">
                     <?php $m_pct = ($currentMonsterPv / $maxMonsterPv) * 100; ?>
-                    <div class="health-bar-fill <?php echo $m_pct > 50 ? 'hp-high' : ($m_pct > 20 ? 'hp-mid' : 'hp-low'); ?>"
+                    <?php 
+                        $mHpColor = 'bg-[#ef4444]';
+                        if ($m_pct > 50) $mHpColor = 'bg-[#4ade80]';
+                        elseif ($m_pct > 20) $mHpColor = 'bg-[#facc15]';
+                    ?>
+                    <div class="h-full transition-[width] duration-300 <?php echo $mHpColor; ?>"
                         style="width: <?php echo $m_pct; ?>%;"></div>
                 </div>
             </div>
