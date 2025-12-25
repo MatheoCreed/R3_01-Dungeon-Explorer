@@ -8,8 +8,8 @@
 
 <div class="admin-card">
     <div style="display:flex; gap:10px; margin-bottom:14px;">
-        <a class="admin-btn" href="index.php?url=admin/monster/index">⬅ Retour monstres</a>
-        <a class="admin-btn" href="index.php?url=admin/monster/edit&id=<?= (int)$monster['id'] ?>">✏️ Modifier monstre</a>
+        <a class="admin-btn" href="index.php?url=admin/monster/index"> Retour monstres</a>
+        <a class="admin-btn" href="index.php?url=admin/monster/edit&id=<?= (int)$monster['id'] ?>"> Modifier monstre</a>
     </div>
 
     <?php if (!empty($error)): ?>

@@ -34,7 +34,7 @@ class PageUserController
         if (!$user)
             die("Utilisateur introuvable.");
 
-        $stmt = $this->pdo->prepare("SELECT * FROM Hero WHERE user_id = ? ORDER BY id ASC");
+        $stmt = $this->pdo->prepare("SELECT * FROM hero WHERE user_id = ? ORDER BY id ASC");
         $stmt->execute([$userId]);
         $heroes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -96,7 +96,7 @@ class PageUserController
                 $hero['current_level'] = 1;
 
                 // (optionnel) corriger direct en BDD
-                $fix = $this->pdo->prepare("UPDATE Hero SET current_level = 1 WHERE id = ?");
+                $fix = $this->pdo->prepare("UPDATE hero SET current_level = 1 WHERE id = ?");
                 $fix->execute([(int) $hero['id']]);
             }
 

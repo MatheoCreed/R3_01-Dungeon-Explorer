@@ -86,7 +86,7 @@ class CombatController
     ============================================================ */
     public function getChapter(int $id): Chapter
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM Chapter WHERE id = ? LIMIT 1");
+        $stmt = $this->pdo->prepare("SELECT * FROM chapter WHERE id = ? LIMIT 1");
         $stmt->execute([$id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -106,14 +106,14 @@ class CombatController
     ============================================================ */
     public function getMonster(int $chapterId): ?Monster
     {
-        $stmt = $this->pdo->prepare('SELECT monster_id FROM Encounter WHERE chapter_id = ? LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT monster_id FROM encounter WHERE chapter_id = ? LIMIT 1');
         $stmt->execute([$chapterId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) return null;
 
         $monsterId = (int)$row['monster_id'];
 
-        $stmt = $this->pdo->prepare('SELECT * FROM Monster WHERE id = ? LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT * FROM monster WHERE id = ? LIMIT 1');
         $stmt->execute([$monsterId]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$data) return null;
@@ -347,8 +347,8 @@ class CombatController
     {
         $stmt = $this->pdo->prepare('
             SELECT h.*, c.name as class_name 
-            FROM Hero h 
-            LEFT JOIN Class c ON h.class_id = c.id 
+            FROM hero h 
+            LEFT JOIN class c ON h.class_id = c.id 
             WHERE h.id = ?
         ');
         $stmt->execute([$id]);
@@ -382,7 +382,7 @@ class CombatController
 
     private function getHeroClassId(int $heroId): int
     {
-        $stmt = $this->pdo->prepare("SELECT class_id FROM Hero WHERE id = ? LIMIT 1");
+        $stmt = $this->pdo->prepare("SELECT class_id FROM hero WHERE id = ? LIMIT 1");
         $stmt->execute([$heroId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int)($row['class_id'] ?? 0);
@@ -390,7 +390,7 @@ class CombatController
 
     private function getHeroLevel(int $heroId): int
     {
-        $stmt = $this->pdo->prepare("SELECT current_level FROM Hero WHERE id = ? LIMIT 1");
+        $stmt = $this->pdo->prepare("SELECT current_level FROM hero WHERE id = ? LIMIT 1");
         $stmt->execute([$heroId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int)($row['current_level'] ?? 1);
@@ -400,8 +400,8 @@ class CombatController
     {
         $stmt = $this->pdo->prepare('
             SELECT s.* 
-            FROM Hero_Spell hs 
-            JOIN Spell s ON hs.spell_id = s.id 
+            FROM hero_spell hs 
+            JOIN spell s ON hs.spell_id = s.id 
             WHERE hs.hero_id = ?
         ');
         $stmt->execute([$heroId]);
@@ -438,7 +438,7 @@ class CombatController
             $levelResult = $this->applyXpAndLevelUp($heroId, $classId, $xpGained);
 
             // 2) Loot
-            $stmt = $this->pdo->prepare('SELECT monster_id FROM Encounter WHERE chapter_id = ? LIMIT 1');
+            $stmt = $this->pdo->prepare('SELECT monster_id FROM encounter WHERE chapter_id = ? LIMIT 1');
             $stmt->execute([$chapterId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $monsterId = $row['monster_id'] ?? null;
@@ -446,8 +446,8 @@ class CombatController
             if ($monsterId) {
                 $stmt = $this->pdo->prepare('
                     SELECT ml.item_id, ml.quantity, ml.drop_rate, i.name 
-                    FROM Monster_Loot ml 
-                    LEFT JOIN Items i ON ml.item_id = i.id 
+                    FROM monster_loot ml 
+                    LEFT JOIN items i ON ml.item_id = i.id 
                     WHERE ml.monster_id = ?
                 ');
                 $stmt->execute([(int)$monsterId]);
@@ -461,16 +461,16 @@ class CombatController
                         $itemId = (int)$loot['item_id'];
                         $qty = (int)$loot['quantity'];
 
-                        $stmtInv = $this->pdo->prepare('SELECT quantity FROM Inventory WHERE hero_id = ? AND item_id = ?');
+                        $stmtInv = $this->pdo->prepare('SELECT quantity FROM inventory WHERE hero_id = ? AND item_id = ?');
                         $stmtInv->execute([$heroId, $itemId]);
                         $existing = $stmtInv->fetch(PDO::FETCH_ASSOC);
 
                         if ($existing) {
                             $newQty = (int)$existing['quantity'] + $qty;
-                            $stmtUpdate = $this->pdo->prepare('UPDATE Inventory SET quantity = ? WHERE hero_id = ? AND item_id = ?');
+                            $stmtUpdate = $this->pdo->prepare('UPDATE inventory SET quantity = ? WHERE hero_id = ? AND item_id = ?');
                             $stmtUpdate->execute([$newQty, $heroId, $itemId]);
                         } else {
-                            $stmtInsert = $this->pdo->prepare('INSERT INTO Inventory (hero_id, item_id, quantity) VALUES (?, ?, ?)');
+                            $stmtInsert = $this->pdo->prepare('INSERT INTO inventory (hero_id, item_id, quantity) VALUES (?, ?, ?)');
                             $stmtInsert->execute([$heroId, $itemId, $qty]);
                         }
 
@@ -513,15 +513,15 @@ class CombatController
 
     private function upsertHeroProgress(int $heroId, int $chapterId): void
     {
-        $stmtProg = $this->pdo->prepare('SELECT chapter_id FROM Hero_Progress WHERE hero_id = ? LIMIT 1');
+        $stmtProg = $this->pdo->prepare('SELECT chapter_id FROM hero_progress WHERE hero_id = ? LIMIT 1');
         $stmtProg->execute([$heroId]);
         $exists = $stmtProg->fetch(PDO::FETCH_ASSOC);
 
         if ($exists) {
-            $stmtUpdateProg = $this->pdo->prepare('UPDATE Hero_Progress SET chapter_id = ? WHERE hero_id = ?');
+            $stmtUpdateProg = $this->pdo->prepare('UPDATE hero_progress SET chapter_id = ? WHERE hero_id = ?');
             $stmtUpdateProg->execute([$chapterId, $heroId]);
         } else {
-            $stmtInsertProg = $this->pdo->prepare('INSERT INTO Hero_Progress (hero_id, chapter_id) VALUES (?, ?)');
+            $stmtInsertProg = $this->pdo->prepare('INSERT INTO hero_progress (hero_id, chapter_id) VALUES (?, ?)');
             $stmtInsertProg->execute([$heroId, $chapterId]);
         }
     }
@@ -536,7 +536,7 @@ class CombatController
         // Lock le héros pendant la transaction
         $stmt = $this->pdo->prepare("
             SELECT xp, current_level, pv, mana, strength, initiative
-            FROM Hero
+            FROM hero
             WHERE id = ?
             FOR UPDATE
         ");
@@ -583,7 +583,7 @@ class CombatController
         }
 
         $stmtUp = $this->pdo->prepare("
-            UPDATE Hero
+            UPDATE hero
             SET xp = ?, current_level = ?, pv = ?, mana = ?, strength = ?, initiative = ?
             WHERE id = ?
         ");

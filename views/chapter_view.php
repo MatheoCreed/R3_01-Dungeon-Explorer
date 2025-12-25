@@ -35,7 +35,7 @@ if (isset($combatController) && method_exists($combatController, 'getMonster')) 
 // Sinon, si une connexion DB globale $db existe, interroger la table Encounter
 if (!$hasEncounter && isset($GLOBALS['db']) && $GLOBALS['db'] instanceof PDO) {
     try {
-        $stmtEnc = $GLOBALS['db']->prepare('SELECT monster_id FROM Encounter WHERE chapter_id = ? LIMIT 1');
+        $stmtEnc = $GLOBALS['db']->prepare('SELECT monster_id FROM encounter WHERE chapter_id = ? LIMIT 1');
         $stmtEnc->execute([isset($chapter) && is_object($chapter) ? $chapter->getId() : ($chapterId ?? 0)]);
         $erow = $stmtEnc->fetch(PDO::FETCH_ASSOC);
         if ($erow && !empty($erow['monster_id'])) {

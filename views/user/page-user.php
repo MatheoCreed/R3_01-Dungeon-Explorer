@@ -93,6 +93,11 @@ $navBtn = "px-4 py-2 bg-black border-[2px] border-[#c99b26] rounded-[10px] text-
         <a href="connexion" class="<?= $btnGold ?> flex items-center justify-center">
             Se déconnecter
         </a>
+        <?php if ($isAdmin): ?>
+            <button class="<?= $btnGold ?>" onclick="location.href='admin'">
+                Accès admin
+            </button>
+        <?php endif; ?>
     </div>
 
     <div class="flex flex-col items-center justify-between py-4 w-1/3">

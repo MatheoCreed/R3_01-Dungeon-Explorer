@@ -12,7 +12,7 @@ class ItemModel {
      * Retourne un tableau associatif ['id'=>..., 'name'=>..., 'description'=>..., 'item_type'=>..., 'image'=>...] si tu as une colonne image.
      */
     public function getById(int $id): ?array {
-        $stmt = $this->pdo->prepare("SELECT * FROM Items WHERE id = ? LIMIT 1");
+        $stmt = $this->pdo->prepare("SELECT * FROM items WHERE id = ? LIMIT 1");
         $stmt->execute([$id]);
         $item = $stmt->fetch(PDO::FETCH_ASSOC);
         return $item ?: null;
@@ -26,7 +26,7 @@ class ItemModel {
         $ids = array_values(array_filter(array_map('intval', $ids)));
         if (empty($ids)) return [];
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
-        $stmt = $this->pdo->prepare("SELECT * FROM Items WHERE id IN ($placeholders)");
+        $stmt = $this->pdo->prepare("SELECT * FROM items WHERE id IN ($placeholders)");
         $stmt->execute($ids);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $out = [];
@@ -41,8 +41,8 @@ class ItemModel {
     public function getInventoryForHero(int $heroId): array {
         $stmt = $this->pdo->prepare("
             SELECT I.*, INV.quantity
-            FROM Inventory INV
-            JOIN Items I ON I.id = INV.item_id
+            FROM inventory INV
+            JOIN items I ON I.id = INV.item_id
             WHERE INV.hero_id = ?
         ");
         $stmt->execute([$heroId]);

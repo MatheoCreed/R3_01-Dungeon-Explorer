@@ -190,7 +190,7 @@ public function setUserId(int $id) { $this->userId = $id; }
             // We expect $this->xp to be cumulative total XP
             while (true) {
                 $nextLevel = $this->currentLevel + 1;
-                $stmt = $db->prepare('SELECT * FROM `Level` WHERE class_id = ? AND level = ? LIMIT 1');
+                $stmt = $db->prepare('SELECT * FROM `level` WHERE class_id = ? AND level = ? LIMIT 1');
                 $stmt->execute([$this->classId, $nextLevel]);
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
                 if (!$row) break;
@@ -348,7 +348,7 @@ public function setUserId(int $id) { $this->userId = $id; }
         }
 
         try {
-            $stmt = $db->prepare('SELECT value FROM Items WHERE id = ?');
+            $stmt = $db->prepare('SELECT value FROM items WHERE id = ?');
             $stmt->execute([(int)$this->primaryWeaponItemId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row ? (int)$row['value'] : 0;
@@ -369,7 +369,7 @@ public function setUserId(int $id) { $this->userId = $id; }
         }
 
         try {
-            $stmt = $db->prepare('SELECT value FROM Items WHERE id = ?');
+            $stmt = $db->prepare('SELECT value FROM items WHERE id = ?');
             $stmt->execute([(int)$this->armorItemId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row ? (int)$row['value'] : 0;

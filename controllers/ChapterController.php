@@ -24,8 +24,8 @@ class ChapterController
         // chapitre actuel du héros
         $stmt = $this->pdo->prepare('
             SELECT ch.id, ch.title, ch.content AS description, ch.image
-            FROM Chapter ch
-            JOIN Hero_Progress hp ON ch.id = hp.chapter_id
+            FROM chapter ch
+            JOIN hero_progress hp ON ch.id = hp.chapter_id
             WHERE hp.hero_id = ?
             LIMIT 1
         ');
@@ -37,7 +37,7 @@ class ChapterController
         // choix
         $stmt2 = $this->pdo->prepare('
             SELECT next_chapter_id, choice_text
-            FROM Links
+            FROM links
             WHERE chapter_id = ?
             ORDER BY id ASC
         ');
@@ -68,7 +68,7 @@ class ChapterController
 
         $heroId = (int)$_SESSION['hero_id'];
 
-        $chapter = $this->getChapter($heroId);
+        $chapter= $this->getChapter($heroId);
         if (!$chapter) {
             die("Chapitre introuvable.");
         }
@@ -98,7 +98,7 @@ class ChapterController
             }
 
             $stmt = $this->pdo->prepare('
-                UPDATE Hero_Progress
+                UPDATE hero_progress
                 SET chapter_id = ?
                 WHERE hero_id = ?
             ');

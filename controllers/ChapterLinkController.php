@@ -38,7 +38,7 @@ class ChapterLinkController
             $text = $_POST['choice_text'];
 
             $stmt = $db->prepare("
-                INSERT INTO Links(chapter_id, next_chapter_id, choice_text)
+                INSERT INTO links(chapter_id, next_chapter_id, choice_text)
                 VALUES (?, ?, ?)
             ");
             $stmt->execute([$chapter_id, $next_id, $text]);
@@ -57,7 +57,7 @@ class ChapterLinkController
 
         $id = $_GET['id'];
 
-        $stmt = $db->prepare("DELETE FROM Links WHERE id = ?");
+        $stmt = $db->prepare("DELETE FROM links WHERE id = ?");
         $stmt->execute([$id]);
 
         header('Location: index');
@@ -71,7 +71,7 @@ class ChapterLinkController
         $id = $_GET['id'];
 
         // Récupérer le lien
-        $stmt = $db->prepare("SELECT * FROM Links WHERE id = ?");
+        $stmt = $db->prepare("SELECT * FROM links WHERE id = ?");
         $stmt->execute([$id]);
         $link = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -87,7 +87,7 @@ class ChapterLinkController
             $text = $_POST['choice_text'];
 
             $stmt = $db->prepare("
-            UPDATE Links
+            UPDATE links
             SET next_chapter_id = ?, choice_text = ?
             WHERE id = ?
         ");

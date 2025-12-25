@@ -13,7 +13,7 @@ class ClassRepository
 
     public function getAll(): array
     {
-        $stmt = $this->pdo->query("SELECT * FROM Class");
+        $stmt = $this->pdo->query("SELECT * FROM class");
         $classes = [];
 
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -35,7 +35,7 @@ class ClassRepository
 
     public function getById(int $id): ?GameClass
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM Class WHERE id = ?");
+        $stmt = $this->pdo->prepare("SELECT * FROM class WHERE id = ?");
         $stmt->execute([$id]);
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -57,7 +57,7 @@ class ClassRepository
     public function create(GameClass $class): bool
     {
         $stmt = $this->pdo->prepare("
-            INSERT INTO Class (name, description, base_pv, base_mana, strength, initiative, max_items, image)
+            INSERT INTO class (name, description, base_pv, base_mana, strength, initiative, max_items, image)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
@@ -76,7 +76,7 @@ class ClassRepository
     public function update(GameClass $class): bool
     {
         $stmt = $this->pdo->prepare("
-            UPDATE Class
+            UPDATE class
             SET name = ?, description = ?, base_pv = ?, base_mana = ?, strength = ?, initiative = ?, max_items = ?, image = ?
             WHERE id = ?
         ");
@@ -96,7 +96,7 @@ class ClassRepository
 
     public function delete(int $id): bool
     {
-        $stmt = $this->pdo->prepare("DELETE FROM Class WHERE id = ?");
+        $stmt = $this->pdo->prepare("DELETE FROM class WHERE id = ?");
         return $stmt->execute([$id]);
     }
 }
